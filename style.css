@@ -304,6 +304,32 @@ button.tab-capturing {
   animation: pulse 1s infinite;
 }
 
+/* Zoom controls */
+#zoom-controls {
+  display: flex;
+  gap: 4px;
+}
+
+#zoom-controls button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Canvas wrapper for pan/zoom */
+#canvas-wrapper {
+  cursor: grab;
+}
+
+#canvas-wrapper:active {
+  cursor: grabbing;
+}
+
 .hidden {
   display: none !important;
 }

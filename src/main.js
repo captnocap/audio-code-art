@@ -4,6 +4,7 @@ import { Renderer } from './visual/renderer.js'
 import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
 import { ASCIIRenderer } from './visual/ascii.js'
+import { PanZoom } from './visual/panzoom.js'
 
 class AudioCanvas {
   constructor() {
@@ -22,11 +23,17 @@ class AudioCanvas {
     this.initUI()
     this.initASCII()
     this.initSpeech()
+    this.initPanZoom()
   }
 
   initASCII() {
     const container = document.getElementById('app')
     this.asciiRenderer = new ASCIIRenderer(container)
+  }
+
+  initPanZoom() {
+    const canvas = document.getElementById('canvas')
+    this.panZoom = new PanZoom(canvas)
   }
 
   initSpeech() {
@@ -120,6 +127,24 @@ class AudioCanvas {
     // Speech/Lyrics toggle
     document.getElementById('speech-toggle')?.addEventListener('change', (e) => {
       this.toggleSpeech(e.target.checked)
+    })
+
+    // Zoom controls
+    document.getElementById('zoom-in')?.addEventListener('click', () => this.panZoom?.zoomIn())
+    document.getElementById('zoom-out')?.addEventListener('click', () => this.panZoom?.zoomOut())
+    document.getElementById('zoom-reset')?.addEventListener('click', () => this.panZoom?.reset())
+
+    // Keyboard shortcuts for zoom
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return // Don't trigger when typing
+
+      if (e.key === '=' || e.key === '+') {
+        this.panZoom?.zoomIn()
+      } else if (e.key === '-') {
+        this.panZoom?.zoomOut()
+      } else if (e.key === '0') {
+        this.panZoom?.reset()
+      }
     })
 
     // Export buttons
@@ -355,9 +380,20 @@ class AudioCanvas {
     if (enabled) {
       this.asciiRenderer.show()
       document.getElementById('canvas').style.opacity = '0'
+      // Start animation loop if not already running
+      if (!this.animationId) {
+        this.animate()
+      }
     } else {
       this.asciiRenderer.hide()
       document.getElementById('canvas').style.opacity = '1'
+      // Stop animation if no audio
+      if (!this.isPlaying && !this.isRecording && !this.isTabCapturing) {
+        if (this.animationId) {
+          cancelAnimationFrame(this.animationId)
+          this.animationId = null
+        }
+      }
     }
   }
 
@@ -372,15 +408,22 @@ class AudioCanvas {
   }
 
   animate() {
-    if (!this.isPlaying && !this.isRecording && !this.isTabCapturing) return
+    const hasAudio = this.isPlaying || this.isRecording || this.isTabCapturing
 
-    const audioFeatures = this.audioAnalyzer.getAudioFeatures()
-    const beatInfo = this.beatDetector.update(audioFeatures, performance.now())
+    // Stop if no audio AND no ASCII mode
+    if (!hasAudio && !this.asciiMode) return
 
-    // Render canvas mode
-    const fps = this.renderer.render(audioFeatures, beatInfo)
+    let audioFeatures = null
+    let beatInfo = { bpm: 0, onBeat: false, beatIntensity: 0, isSaturated: false }
+    let fps = 0
 
-    // Render ASCII mode if active
+    if (hasAudio) {
+      audioFeatures = this.audioAnalyzer.getAudioFeatures()
+      beatInfo = this.beatDetector.update(audioFeatures, performance.now())
+      fps = this.renderer.render(audioFeatures, beatInfo)
+    }
+
+    // Render ASCII mode if active (works with or without audio)
     if (this.asciiMode) {
       const speechData = speechInterpreter.getVisualizationData()
       this.asciiRenderer.update(audioFeatures, speechData)
