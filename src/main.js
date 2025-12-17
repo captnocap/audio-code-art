@@ -115,6 +115,22 @@ class AudioCanvas {
     const canvas = document.getElementById('canvas')
     this.renderer = new Renderer(canvas)
 
+    // Tab switching
+    document.querySelectorAll('.mode-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Update tab active states
+        document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'))
+        tab.classList.add('active')
+
+        // Update panel visibility
+        document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'))
+        const panel = document.querySelector(`[data-panel="${tab.dataset.tab}"]`)
+        if (panel) {
+          panel.classList.add('active')
+        }
+      })
+    })
+
     // Mode selection
     document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.addEventListener('click', () => {

@@ -13,40 +13,63 @@
 
     <div id="controls">
       <div id="mode-selector">
-        <button class="mode-btn active" data-mode="flowParticles" title="Particles following flow fields">〰️ Flow</button>
-        <button class="mode-btn" data-mode="pixelSort" title="Glitchy pixel sorting">▦ Sort</button>
-        <button class="mode-btn" data-mode="mandala" title="Radial beat slices">◎ Mandala</button>
-        <button class="mode-btn" data-mode="lsystem" title="Fractal tree growth">🌿 Tree</button>
-        <button class="mode-btn" data-mode="rings" title="Concentric ring pulses">○ Rings</button>
-        <button class="mode-btn" data-mode="constellation" title="Star map">✦ Stars</button>
-        <button class="mode-btn" data-mode="terrain" title="Mountain landscape">⛰ Terrain</button>
-        <button class="mode-btn" data-mode="mirror" title="Kaleidoscope symmetry">✧ Mirror</button>
-        <button class="mode-btn" data-mode="plotter" title="Single continuous line for pen plotters">✎ Plotter</button>
-        <button class="mode-btn" data-mode="spirograph" title="Audio-modulated mathematical curves">❋ Spiro</button>
-        <button class="mode-btn" data-mode="automata" title="Game of Life with audio-modulated rules">▣ Life</button>
-        <button class="mode-btn" data-mode="orbits" title="Particles orbiting gravitational attractors">◉ Orbits</button>
-        <button class="mode-btn" data-mode="voronoi" title="Cellular patterns that fracture on beats">⬡ Voronoi</button>
-        <button class="mode-btn" data-mode="mycelium" title="Organic branching network growth">🍄 Mycelium</button>
-        <button class="mode-btn" data-mode="contours" title="Audio height field with contour lines">≋ Contours</button>
-        <button class="mode-btn" data-mode="stainedglass" title="Delaunay mosaic with rippling colors">◇ Glass</button>
-        <button class="mode-btn" data-mode="isometric" title="Procedural cityscapes that breathe with audio">🏙 City</button>
-        <button class="mode-btn" data-mode="cymatics" title="Chladni plate standing wave patterns">〇 Cymatics</button>
-        <button class="mode-btn" data-mode="reactiondiffusion" title="Organic Gray-Scott chemical patterns">🧫 R-D</button>
-        <button class="mode-btn" data-mode="pipes" title="Classic Windows 3D pipes screensaver">🔧 Pipes</button>
-        <button class="mode-btn" data-mode="molecular" title="Atoms forming and breaking chemical bonds">⚛ Molecular</button>
-        <button class="mode-btn" data-mode="crystal" title="Dendritic crystal nucleation and growth">❄ Crystal</button>
-        <button class="mode-btn" data-mode="orbitals" title="Quantum probability clouds (s, p, d, f)">☢ Orbitals</button>
-        <button class="mode-btn" data-mode="combustion" title="Realistic fire with chemical reactions">🔥 Fire</button>
-        <button class="mode-btn" data-mode="titration" title="Color-changing pH indicator solution">🧪 pH</button>
-        <button class="mode-btn" data-mode="polymer" title="Chain reactions building polymer structures">🔗 Polymer</button>
-        <button class="mode-btn" data-mode="electrochemistry" title="Electrochemical cells with electron flow">⚡ Electro</button>
-        <button class="mode-btn" data-mode="mandelbrot" title="Audio-reactive fractal exploration with Julia morphing">🌀 Fractal</button>
-        <button class="mode-btn" data-mode="jsxgen" title="Generate React components from audio">⚛️ JSX</button>
-        <span class="mode-separator">|</span>
-        <button class="mode-btn mode-3d" data-mode="geometry3d" title="Pulsing 3D icosahedron with audio-reactive morphing">💎 Geometry</button>
-        <button class="mode-btn mode-3d" data-mode="nebula3d" title="Cosmic particle cloud that breathes with audio">🌌 Nebula</button>
-        <button class="mode-btn mode-3d" data-mode="tunnel3d" title="Infinite tunnel flying through audio-reactive space">🕳️ Tunnel</button>
-        <button class="mode-btn mode-3d" data-mode="protein3d" title="Amino acid chains folding and unfolding with audio">🧬 Protein</button>
+        <div id="mode-tabs">
+          <button class="mode-tab active" data-tab="2d">2D</button>
+          <button class="mode-tab" data-tab="3d">3D</button>
+          <button class="mode-tab" data-tab="games">Games</button>
+          <button class="mode-tab" data-tab="code">Code</button>
+        </div>
+
+        <div id="mode-panels">
+          <div class="mode-panel active" data-panel="2d">
+            <button class="mode-btn active" data-mode="flowParticles" title="Particles following flow fields">〰️ Flow</button>
+            <button class="mode-btn" data-mode="pixelSort" title="Glitchy pixel sorting">▦ Sort</button>
+            <button class="mode-btn" data-mode="mandala" title="Radial beat slices">◎ Mandala</button>
+            <button class="mode-btn" data-mode="lsystem" title="Fractal tree growth">🌿 Tree</button>
+            <button class="mode-btn" data-mode="rings" title="Concentric ring pulses">○ Rings</button>
+            <button class="mode-btn" data-mode="constellation" title="Star map">✦ Stars</button>
+            <button class="mode-btn" data-mode="terrain" title="Mountain landscape">⛰ Terrain</button>
+            <button class="mode-btn" data-mode="mirror" title="Kaleidoscope symmetry">✧ Mirror</button>
+            <button class="mode-btn" data-mode="plotter" title="Single continuous line for pen plotters">✎ Plotter</button>
+            <button class="mode-btn" data-mode="spirograph" title="Audio-modulated mathematical curves">❋ Spiro</button>
+            <button class="mode-btn" data-mode="automata" title="Game of Life with audio-modulated rules">▣ Life</button>
+            <button class="mode-btn" data-mode="orbits" title="Particles orbiting gravitational attractors">◉ Orbits</button>
+            <button class="mode-btn" data-mode="voronoi" title="Cellular patterns that fracture on beats">⬡ Voronoi</button>
+            <button class="mode-btn" data-mode="mycelium" title="Organic branching network growth">🍄 Mycelium</button>
+            <button class="mode-btn" data-mode="contours" title="Audio height field with contour lines">≋ Contours</button>
+            <button class="mode-btn" data-mode="stainedglass" title="Delaunay mosaic with rippling colors">◇ Glass</button>
+            <button class="mode-btn" data-mode="isometric" title="Procedural cityscapes that breathe with audio">🏙 City</button>
+            <button class="mode-btn" data-mode="cymatics" title="Chladni plate standing wave patterns">〇 Cymatics</button>
+            <button class="mode-btn" data-mode="reactiondiffusion" title="Organic Gray-Scott chemical patterns">🧫 R-D</button>
+            <button class="mode-btn" data-mode="pipes" title="Classic Windows 3D pipes screensaver">🔧 Pipes</button>
+            <button class="mode-btn" data-mode="molecular" title="Atoms forming and breaking chemical bonds">⚛ Molecular</button>
+            <button class="mode-btn" data-mode="crystal" title="Dendritic crystal nucleation and growth">❄ Crystal</button>
+            <button class="mode-btn" data-mode="orbitals" title="Quantum probability clouds (s, p, d, f)">☢ Orbitals</button>
+            <button class="mode-btn" data-mode="combustion" title="Realistic fire with chemical reactions">🔥 Fire</button>
+            <button class="mode-btn" data-mode="titration" title="Color-changing pH indicator solution">🧪 pH</button>
+            <button class="mode-btn" data-mode="polymer" title="Chain reactions building polymer structures">🔗 Polymer</button>
+            <button class="mode-btn" data-mode="electrochemistry" title="Electrochemical cells with electron flow">⚡ Electro</button>
+            <button class="mode-btn" data-mode="mandelbrot" title="Audio-reactive fractal exploration with Julia morphing">🌀 Fractal</button>
+          </div>
+
+          <div class="mode-panel" data-panel="3d">
+            <button class="mode-btn" data-mode="geometry3d" title="Pulsing 3D icosahedron with audio-reactive morphing">💎 Geometry</button>
+            <button class="mode-btn" data-mode="nebula3d" title="Cosmic particle cloud that breathes with audio">🌌 Nebula</button>
+            <button class="mode-btn" data-mode="tunnel3d" title="Infinite tunnel flying through audio-reactive space">🕳️ Tunnel</button>
+            <button class="mode-btn" data-mode="protein3d" title="Amino acid chains folding and unfolding with audio">🧬 Protein</button>
+          </div>
+
+          <div class="mode-panel" data-panel="games">
+            <button class="mode-btn" data-mode="bullethell" title="Navigate audio-generated bullet patterns - you cannot die">👾 Bullet Hell</button>
+            <button class="mode-btn" data-mode="tetris" title="Tetris where pieces are chosen by audio">🧱 Tetris</button>
+            <button class="mode-btn" data-mode="minesweeper" title="Beats spawn mines - clear between the chaos">💣 Minesweeper</button>
+            <button class="mode-btn" data-mode="audiosurf" title="Ride a highway generated from audio">🏄 Audiosurf</button>
+          </div>
+
+          <div class="mode-panel" data-panel="code">
+            <button class="mode-btn" data-mode="jsxgen" title="Generate React components from audio">⚛️ JSX Generator</button>
+          </div>
+        </div>
       </div>
 
       <div class="separator"></div>
@@ -299,6 +322,29 @@
               <p>Generate React components from audio. Beats spawn components, bass creates structure.</p>
             </div>
           </div>
+          <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #ff4488;">Interactive Modes (Games!)</h3>
+          <div class="mode-grid">
+            <div class="mode-item">
+              <span class="mode-icon">👾</span>
+              <strong>Bullet Hell</strong>
+              <p>Navigate audio-generated patterns. You cannot die - collisions transform reality. WASD to move.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🧱</span>
+              <strong>Tetris</strong>
+              <p>Bass = heavy blocks (O, J, L). High freq = light pieces (I, S, Z). Beats speed up drops.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">💣</span>
+              <strong>Minesweeper</strong>
+              <p>Beats spawn hidden mines. Quiet sections = safe clearing time. Race against the music.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🏄</span>
+              <strong>Audiosurf</strong>
+              <p>Ride a 3D highway generated from audio. Collect orbs. Speed scales with tempo.</p>
+            </div>
+          </div>
           <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #8844ff;">3D Modes (WebGL)</h3>
           <div class="mode-grid">
             <div class="mode-item">
@@ -322,6 +368,25 @@
               <p>Amino acid chains that fold and unfold. Alpha helices and beta sheets form with audio.</p>
             </div>
           </div>
+        </section>
+
+        <section>
+          <h2>Bullet Hell Mode</h2>
+          <p>A choreography engine driven by sound. You cannot die - collisions transform instead of ending.</p>
+          <ul>
+            <li><strong>Bass</strong> spawns gravitational enemies - slow, massive, pulling</li>
+            <li><strong>High frequencies</strong> spawn shrapnel - fast, needle-like patterns</li>
+            <li><strong>Beats</strong> spawn radial bursts from random points</li>
+            <li><strong>Silence</strong> creates breathing room</li>
+          </ul>
+          <p>Physics modes change based on audio:</p>
+          <ul>
+            <li><strong>Orbital</strong> - Heavy bass makes bullets curve around you</li>
+            <li><strong>Branching</strong> - High frequencies make bullets split</li>
+            <li><strong>Tunnel</strong> - High intensity accelerates everything</li>
+            <li><strong>Contour</strong> - Quiet moments turn bullets into safe zones</li>
+          </ul>
+          <p>Getting hit doesn't end the game - it might distort time, shift colors, invert your controls, or clear bullets. The goal isn't survival - it's grace, timing, and reading the field.</p>
         </section>
 
         <section>

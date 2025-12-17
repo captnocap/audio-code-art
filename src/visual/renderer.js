@@ -28,6 +28,10 @@ import { ElectrochemistryMode } from './modes/electrochemistry.js'
 import { PipesMode } from './modes/pipes.js'
 import { MandelbrotMode } from './modes/mandelbrot.js'
 import { JSXGenMode } from './modes/jsxgen.js'
+import { BulletHellMode } from './modes/bullethell.js'
+import { TetrisMode } from './modes/tetris.js'
+import { MinesweeperMode } from './modes/minesweeper.js'
+import { AudiosurfMode } from './modes/audiosurf.js'
 import { svgExporter } from '../export/svg.js'
 
 const MODE_CLASSES = {
@@ -59,7 +63,11 @@ const MODE_CLASSES = {
   electrochemistry: ElectrochemistryMode,
   pipes: PipesMode,
   mandelbrot: MandelbrotMode,
-  jsxgen: JSXGenMode
+  jsxgen: JSXGenMode,
+  bullethell: BulletHellMode,
+  tetris: TetrisMode,
+  minesweeper: MinesweeperMode,
+  audiosurf: AudiosurfMode
 }
 
 export class Renderer {

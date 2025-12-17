@@ -64,10 +64,74 @@ body {
 
 #mode-selector {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 700px;
+}
+
+#mode-tabs {
+  display: flex;
   gap: 4px;
-  flex-wrap: wrap;
-  max-width: 600px;
   justify-content: center;
+}
+
+.mode-tab {
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px 6px 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mode-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mode-tab.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-bottom-color: transparent;
+  color: #fff;
+}
+
+.mode-tab[data-tab="3d"].active {
+  background: rgba(136, 68, 255, 0.2);
+  color: #a88fff;
+}
+
+.mode-tab[data-tab="games"].active {
+  background: rgba(255, 68, 136, 0.2);
+  color: #ff88aa;
+}
+
+.mode-tab[data-tab="code"].active {
+  background: rgba(68, 255, 136, 0.2);
+  color: #88ffaa;
+}
+
+#mode-panels {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 0 8px 8px;
+  padding: 8px;
+}
+
+.mode-panel {
+  display: none;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.mode-panel.active {
+  display: flex;
 }
 
 .mode-btn {
@@ -112,6 +176,21 @@ body {
 .mode-btn.mode-3d.active {
   background: rgba(136, 68, 255, 0.3);
   border-color: rgba(136, 68, 255, 0.6);
+}
+
+.mode-btn.mode-interactive {
+  background: rgba(255, 68, 136, 0.1);
+  border-color: rgba(255, 68, 136, 0.3);
+}
+
+.mode-btn.mode-interactive:hover {
+  background: rgba(255, 68, 136, 0.2);
+  border-color: rgba(255, 68, 136, 0.4);
+}
+
+.mode-btn.mode-interactive.active {
+  background: rgba(255, 68, 136, 0.3);
+  border-color: rgba(255, 68, 136, 0.6);
 }
 
 #drop-zone {

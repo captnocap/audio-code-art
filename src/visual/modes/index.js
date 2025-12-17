@@ -37,6 +37,12 @@ export { PipesMode } from './pipes.js'
 // Meta modes
 export { JSXGenMode } from './jsxgen.js'
 
+// Interactive modes
+export { BulletHellMode } from './bullethell.js'
+export { TetrisMode } from './tetris.js'
+export { MinesweeperMode } from './minesweeper.js'
+export { AudiosurfMode } from './audiosurf.js'
+
 // Registry of all available modes
 export const MODES = {
   flowParticles: {
@@ -228,6 +234,32 @@ export const MODES = {
     name: 'JSX Generator',
     description: 'Generate React components from audio - songs become design systems',
     icon: '⚛️'
+  },
+
+  // Interactive modes
+  bullethell: {
+    class: () => import('./bullethell.js').then(m => m.BulletHellMode),
+    name: 'Bullet Hell',
+    description: 'Navigate audio-generated patterns. You cannot die, only transform.',
+    icon: '👾'
+  },
+  tetris: {
+    class: () => import('./tetris.js').then(m => m.TetrisMode),
+    name: 'Audio Tetris',
+    description: 'Tetris where pieces are chosen by audio. Bass = heavy, highs = light.',
+    icon: '🧱'
+  },
+  minesweeper: {
+    class: () => import('./minesweeper.js').then(m => m.MinesweeperMode),
+    name: 'Audio Minesweeper',
+    description: 'Beats spawn mines. Clear between the chaos.',
+    icon: '💣'
+  },
+  audiosurf: {
+    class: () => import('./audiosurf.js').then(m => m.AudiosurfMode),
+    name: 'Audiosurf',
+    description: 'Ride a highway generated from audio. Collect orbs, feel the flow.',
+    icon: '🏄'
   }
 }
 
