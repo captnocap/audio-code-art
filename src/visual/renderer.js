@@ -7,6 +7,8 @@ import { RingsMode } from './modes/rings.js'
 import { ConstellationMode } from './modes/constellation.js'
 import { TerrainMode } from './modes/terrain.js'
 import { MirrorMode } from './modes/mirror.js'
+import { PlotterMode } from './modes/plotter.js'
+import { svgExporter } from '../export/svg.js'
 
 const MODE_CLASSES = {
   flowParticles: FlowParticlesMode,
@@ -16,7 +18,8 @@ const MODE_CLASSES = {
   rings: RingsMode,
   constellation: ConstellationMode,
   terrain: TerrainMode,
-  mirror: MirrorMode
+  mirror: MirrorMode,
+  plotter: PlotterMode
 }
 
 export class Renderer {
@@ -158,5 +161,25 @@ export class Renderer {
     link.download = `audio-canvas-${modeName}-${Date.now()}.png`
     link.href = exportCanvas.toDataURL('image/png')
     link.click()
+  }
+
+  // Export as SVG (for modes that support it)
+  exportSVG() {
+    if (!this.currentMode || typeof this.currentMode.exportSVG !== 'function') {
+      console.warn(`SVG export not supported for mode: ${this.currentModeName}`)
+      alert(`SVG export is available for: Constellation, Tree, Plotter`)
+      return
+    }
+
+    const svgContent = this.currentMode.exportSVG(this.width, this.height)
+    if (svgContent) {
+      const modeName = this.currentModeName
+      svgExporter.download(svgContent, `audio-canvas-${modeName}-${Date.now()}.svg`)
+    }
+  }
+
+  // Check if current mode supports SVG export
+  supportsSVG() {
+    return this.currentMode && typeof this.currentMode.exportSVG === 'function'
   }
 }

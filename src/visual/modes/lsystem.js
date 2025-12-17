@@ -1,5 +1,6 @@
 import { VisualizationMode } from './base.js'
 import { pitchTempoToColor, pitchTempoToRGB } from '../palette.js'
+import { svgExporter } from '../../export/svg.js'
 
 // L-system tree growth - branches extend on beats
 // Angle and length determined by pitch, creating unique tree per song
@@ -192,5 +193,43 @@ export class LSystemMode extends VisualizationMode {
 
   exportData() {
     return { branches: this.branches }
+  }
+
+  // Export as SVG - branches as lines, leaves as circles
+  exportSVG(screenWidth, screenHeight) {
+    let branchElements = ''
+    let leafElements = ''
+
+    // Sort branches by depth for proper layering
+    const sortedBranches = [...this.branches].sort((a, b) => a.depth - b.depth)
+
+    for (const branch of sortedBranches) {
+      const start = svgExporter.scale(branch.x1, branch.y1, screenWidth, screenHeight)
+      const end = svgExporter.scale(branch.x2, branch.y2, screenWidth, screenHeight)
+      const scaledThickness = (branch.thickness / screenWidth) * svgExporter.width
+
+      if (branch.isLeaf) {
+        // Leaves as circles
+        leafElements += svgExporter.circle(start.x, start.y, scaledThickness * 2, {
+          fill: svgExporter.rgbToHex(branch.rgb),
+          stroke: 'none',
+          opacity: 0.7
+        })
+      } else {
+        // Branches as lines
+        branchElements += svgExporter.line(start.x, start.y, end.x, end.y, {
+          stroke: svgExporter.rgbToHex(branch.rgb),
+          strokeWidth: Math.max(scaledThickness, 0.5),
+          opacity: 0.9
+        })
+      }
+    }
+
+    const content = `
+      <g id="branches" stroke-linecap="round">${branchElements}</g>
+      <g id="leaves">${leafElements}</g>
+    `
+
+    return svgExporter.createDocument(content)
   }
 }

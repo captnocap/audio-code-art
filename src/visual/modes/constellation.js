@@ -1,5 +1,6 @@
 import { VisualizationMode } from './base.js'
 import { pitchTempoToColor, pitchTempoToRGB } from '../palette.js'
+import { svgExporter } from '../../export/svg.js'
 
 // Stars spawn on beats, connect to nearby stars
 // Builds a constellation/star map over time
@@ -184,5 +185,55 @@ export class ConstellationMode extends VisualizationMode {
     this.ctx.fillRect(0, 0, this.width, this.height)
     this.stars = []
     this.connections = []
+  }
+
+  // Export as SVG - stars as circles, connections as lines
+  exportSVG(screenWidth, screenHeight) {
+    let connectionElements = ''
+    let starElements = ''
+
+    // Draw connections first (behind stars)
+    for (const conn of this.connections) {
+      const a = svgExporter.scale(conn.a.x, conn.a.y, screenWidth, screenHeight)
+      const b = svgExporter.scale(conn.b.x, conn.b.y, screenWidth, screenHeight)
+
+      // Gradient line would need defs, so use average color
+      const avgR = Math.floor((conn.a.rgb.r + conn.b.rgb.r) / 2)
+      const avgG = Math.floor((conn.a.rgb.g + conn.b.rgb.g) / 2)
+      const avgB = Math.floor((conn.a.rgb.b + conn.b.rgb.b) / 2)
+
+      connectionElements += svgExporter.line(a.x, a.y, b.x, b.y, {
+        stroke: svgExporter.rgbToHex({ r: avgR, g: avgG, b: avgB }),
+        strokeWidth: 0.5,
+        opacity: conn.alpha * 0.8
+      })
+    }
+
+    // Draw stars
+    for (const star of this.stars) {
+      const pos = svgExporter.scale(star.x, star.y, screenWidth, screenHeight)
+      const scaledSize = (star.size / screenWidth) * svgExporter.width
+
+      // Outer glow circle
+      starElements += svgExporter.circle(pos.x, pos.y, scaledSize * 3, {
+        fill: svgExporter.rgbToHex(star.rgb),
+        stroke: 'none',
+        opacity: star.alpha * 0.3
+      })
+
+      // Core circle
+      starElements += svgExporter.circle(pos.x, pos.y, scaledSize, {
+        fill: '#ffffff',
+        stroke: 'none',
+        opacity: star.alpha
+      })
+    }
+
+    const content = `
+      <g id="connections">${connectionElements}</g>
+      <g id="stars">${starElements}</g>
+    `
+
+    return svgExporter.createDocument(content)
   }
 }

@@ -20,6 +20,7 @@
         <button class="mode-btn" data-mode="constellation" title="Star map">✦ Stars</button>
         <button class="mode-btn" data-mode="terrain" title="Mountain landscape">⛰ Terrain</button>
         <button class="mode-btn" data-mode="mirror" title="Kaleidoscope symmetry">✧ Mirror</button>
+        <button class="mode-btn" data-mode="plotter" title="Single continuous line for pen plotters">✎ Plotter</button>
       </div>
 
       <div class="separator"></div>
@@ -42,6 +43,7 @@
 
       <div id="export-controls" class="hidden">
         <button id="export-png" title="Export 4K PNG">📷 PNG</button>
+        <button id="export-svg" title="Export SVG (Stars, Tree, Plotter)">✒️ SVG</button>
       </div>
 
       <button id="clear-btn" title="Clear canvas">🗑️</button>
@@ -129,6 +131,11 @@
               <strong>Mirror</strong>
               <p>8-way kaleidoscope symmetry. Particles are mirrored radially around center.</p>
             </div>
+            <div class="mode-item">
+              <span class="mode-icon">✎</span>
+              <strong>Plotter</strong>
+              <p>Single continuous line that never lifts. Perfect for pen plotters like AxiDraw.</p>
+            </div>
           </div>
         </section>
 
@@ -142,10 +149,22 @@
           <ul>
             <li><strong>Drop audio file</strong> or click to browse</li>
             <li><strong>Mic</strong> - Record from microphone</li>
-            <li><strong>PNG</strong> - Export 4K image</li>
+            <li><strong>PNG</strong> - Export 4K raster image</li>
+            <li><strong>SVG</strong> - Export vector (Stars, Tree, Plotter only)</li>
             <li><strong>Clear</strong> - Reset canvas</li>
             <li><strong>Mode buttons</strong> - Switch visualization (clears canvas)</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>SVG Export</h2>
+          <p>Three modes support vector export for infinite resolution and pen plotting:</p>
+          <ul>
+            <li><strong>Stars</strong> - Circles and lines, great for laser cutting</li>
+            <li><strong>Tree</strong> - Branch paths, perfect for nature prints</li>
+            <li><strong>Plotter</strong> - Single continuous stroke for AxiDraw</li>
+          </ul>
+          <p>SVGs can be opened in Illustrator, scaled to any size, or sent directly to pen plotters.</p>
         </section>
 
         <section>

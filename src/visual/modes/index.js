@@ -7,6 +7,7 @@ export { RingsMode } from './rings.js'
 export { ConstellationMode } from './constellation.js'
 export { TerrainMode } from './terrain.js'
 export { MirrorMode } from './mirror.js'
+export { PlotterMode } from './plotter.js'
 
 // Registry of all available modes
 export const MODES = {
@@ -57,6 +58,13 @@ export const MODES = {
     name: 'Mirror',
     description: 'Kaleidoscope with radial symmetry',
     icon: '✧'
+  },
+  plotter: {
+    class: () => import('./plotter.js').then(m => m.PlotterMode),
+    name: 'Plotter',
+    description: 'Single continuous line for pen plotters',
+    icon: '✎',
+    supportsSVG: true
   }
 }
 

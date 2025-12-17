@@ -66,6 +66,7 @@ class AudioCanvas {
 
     // Export buttons
     document.getElementById('export-png').addEventListener('click', () => this.exportPNG())
+    document.getElementById('export-svg').addEventListener('click', () => this.exportSVG())
 
     // Clear button
     document.getElementById('clear-btn').addEventListener('click', () => {
@@ -211,6 +212,10 @@ class AudioCanvas {
 
   exportPNG() {
     this.renderer.exportPNG()
+  }
+
+  exportSVG() {
+    this.renderer.exportSVG()
   }
 }
 
