@@ -42,8 +42,18 @@ export class Renderer {
     this.exportWidth = 3840
     this.exportHeight = 2160
 
+    // Background transparency (for YouTube overlay)
+    this.transparentBackground = false
+
     this.resize()
     window.addEventListener('resize', () => this.resize())
+  }
+
+  setTransparentBackground(transparent) {
+    this.transparentBackground = transparent
+    if (this.currentMode) {
+      this.currentMode.transparentBackground = transparent
+    }
   }
 
   resize() {
@@ -72,6 +82,7 @@ export class Renderer {
     this.currentModeName = modeName
     const ModeClass = MODE_CLASSES[modeName]
     this.currentMode = new ModeClass(this.ctx, this.width, this.height)
+    this.currentMode.transparentBackground = this.transparentBackground
     this.currentMode.init()
     this.clear()
   }
@@ -101,8 +112,12 @@ export class Renderer {
   }
 
   clear() {
-    this.ctx.fillStyle = '#0a0a0a'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    if (this.transparentBackground) {
+      this.ctx.clearRect(0, 0, this.width, this.height)
+    } else {
+      this.ctx.fillStyle = '#0a0a0a'
+      this.ctx.fillRect(0, 0, this.width, this.height)
+    }
     if (this.currentMode) {
       this.currentMode.clear()
     }

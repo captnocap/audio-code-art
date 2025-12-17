@@ -70,6 +70,53 @@ export class AudioAnalyzer {
     this.isRecording = false
   }
 
+  // Capture audio from the current tab (for YouTube, Spotify, etc.)
+  async startTabCapture() {
+    try {
+      // Request screen/tab share with audio
+      this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,  // Required, but we'll ignore it
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        }
+      })
+
+      // Check if audio track exists
+      const audioTracks = this.mediaStream.getAudioTracks()
+      if (audioTracks.length === 0) {
+        throw new Error('No audio track - make sure to check "Share audio" when sharing the tab')
+      }
+
+      // Create audio-only stream
+      const audioStream = new MediaStream(audioTracks)
+      this.source = this.audioContext.createMediaStreamSource(audioStream)
+      this.source.connect(this.analyser)
+
+      // Don't connect to destination - we don't want to create feedback
+      // The audio plays from the tab itself
+
+      this.isRecording = true
+      return true
+    } catch (err) {
+      console.error('Tab capture failed:', err)
+      return false
+    }
+  }
+
+  stopTabCapture() {
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach(track => track.stop())
+      this.mediaStream = null
+    }
+    if (this.source) {
+      this.source.disconnect()
+      this.source = null
+    }
+    this.isRecording = false
+  }
+
   play() {
     if (this.audioContext.state === 'suspended') {
       this.audioContext.resume()

@@ -6,6 +6,19 @@ export class VisualizationMode {
     this.height = height
     this.name = 'base'
     this.description = 'Base visualization mode'
+    this.transparentBackground = false
+  }
+
+  // Helper for background - use transparent when video is behind
+  clearBackground(opacity = 1) {
+    if (this.transparentBackground) {
+      // Semi-transparent clear for trail effect over video
+      this.ctx.fillStyle = `rgba(0, 0, 0, ${opacity * 0.3})`
+      this.ctx.fillRect(0, 0, this.width, this.height)
+    } else {
+      this.ctx.fillStyle = `rgba(10, 10, 10, ${opacity})`
+      this.ctx.fillRect(0, 0, this.width, this.height)
+    }
   }
 
   // Called when mode is activated

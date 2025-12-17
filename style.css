@@ -17,10 +17,24 @@ body {
   position: relative;
 }
 
+#video-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: #0a0a0a;
+}
+
 #canvas {
+  position: relative;
   width: 100%;
   height: 100%;
   display: block;
+  z-index: 1;
+}
+
+#canvas.transparent-bg {
+  background: transparent;
 }
 
 #controls {
@@ -201,6 +215,90 @@ button.recording {
 
 .toggle-label {
   white-space: nowrap;
+}
+
+/* YouTube controls */
+#youtube-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+#youtube-url {
+  width: 180px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 11px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+#youtube-url:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+#youtube-url::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+#youtube-load, #youtube-clear {
+  padding: 8px 10px;
+}
+
+#youtube-clear {
+  background: rgba(255, 50, 50, 0.2);
+  border-color: rgba(255, 50, 50, 0.4);
+}
+
+/* Video settings */
+#video-settings {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#video-opacity {
+  width: 60px;
+  height: 4px;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+#video-opacity::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#video-opacity::-webkit-slider-thumb:hover {
+  background: #fff;
+}
+
+#video-opacity::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Tab capture button active state */
+button.tab-capturing {
+  background: rgba(50, 200, 100, 0.3);
+  border-color: rgba(50, 200, 100, 0.6);
+  animation: pulse 1s infinite;
 }
 
 .hidden {

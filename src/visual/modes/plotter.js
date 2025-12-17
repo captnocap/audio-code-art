@@ -159,8 +159,7 @@ export class PlotterMode extends VisualizationMode {
 
   draw() {
     // Subtle fade for trail effect
-    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.02)'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    this.clearBackground(0.02)
 
     if (this.points.length < 2) return
 
@@ -196,8 +195,7 @@ export class PlotterMode extends VisualizationMode {
   }
 
   clear() {
-    this.ctx.fillStyle = '#0a0a0a'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    this.clearBackground(1)
     this.init()
   }
 

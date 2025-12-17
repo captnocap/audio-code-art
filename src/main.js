@@ -1,6 +1,7 @@
 import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
+import { youtubeEmbed } from './youtube/embed.js'
 
 class AudioCanvas {
   constructor() {
@@ -9,7 +10,9 @@ class AudioCanvas {
     this.renderer = null
     this.isPlaying = false
     this.isRecording = false
+    this.isTabCapturing = false
     this.animationId = null
+    this.hasVideo = false
 
     this.initUI()
   }
@@ -63,6 +66,24 @@ class AudioCanvas {
 
     // Record button
     document.getElementById('record-btn').addEventListener('click', () => this.toggleRecord())
+
+    // Tab capture button
+    document.getElementById('tab-capture-btn').addEventListener('click', () => this.toggleTabCapture())
+
+    // YouTube controls
+    document.getElementById('youtube-load').addEventListener('click', () => this.loadYouTube())
+    document.getElementById('youtube-url').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.loadYouTube()
+    })
+    document.getElementById('youtube-clear').addEventListener('click', () => this.clearYouTube())
+
+    // Video settings
+    document.getElementById('video-toggle').addEventListener('change', (e) => {
+      youtubeEmbed.setVisible(e.target.checked)
+    })
+    document.getElementById('video-opacity').addEventListener('input', (e) => {
+      youtubeEmbed.setOpacity(e.target.value / 100)
+    })
 
     // Export buttons
     document.getElementById('export-png').addEventListener('click', () => this.exportPNG())
@@ -194,8 +215,106 @@ class AudioCanvas {
     }
   }
 
+  async toggleTabCapture() {
+    const btn = document.getElementById('tab-capture-btn')
+
+    if (this.isTabCapturing) {
+      this.audioAnalyzer.stopTabCapture()
+      this.isTabCapturing = false
+      btn.textContent = '🔊 Tab'
+      btn.classList.remove('tab-capturing')
+      this.renderer.stop()
+      if (!this.hasVideo) {
+        this.trackInfoElement.classList.add('hidden')
+      }
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId)
+        this.animationId = null
+      }
+    } else {
+      if (!this.audioAnalyzer.audioContext) {
+        await this.audioAnalyzer.init()
+      }
+
+      // Show instructions
+      alert('Select this tab and check "Share audio" to capture YouTube/Spotify audio')
+
+      const success = await this.audioAnalyzer.startTabCapture()
+      if (success) {
+        this.isTabCapturing = true
+        btn.textContent = '⏹️ Stop'
+        btn.classList.add('tab-capturing')
+        document.getElementById('export-controls').classList.remove('hidden')
+
+        if (!this.hasVideo) {
+          this.trackNameElement.textContent = 'Capturing tab audio...'
+          this.trackInfoElement.classList.remove('hidden')
+        }
+
+        // Clear and start fresh
+        this.renderer.clear()
+        this.beatDetector.reset()
+        this.renderer.start()
+        this.animate()
+      }
+    }
+  }
+
+  async loadYouTube() {
+    const urlInput = document.getElementById('youtube-url')
+    const url = urlInput.value.trim()
+
+    if (!url) return
+
+    try {
+      const container = document.getElementById('video-container')
+      const info = await youtubeEmbed.embed(url, container)
+
+      // Set initial opacity
+      const opacity = document.getElementById('video-opacity').value / 100
+      youtubeEmbed.setOpacity(opacity)
+
+      // Update UI
+      this.hasVideo = true
+      document.getElementById('youtube-clear').classList.remove('hidden')
+      document.getElementById('video-settings').classList.remove('hidden')
+
+      // Show video title
+      this.trackNameElement.textContent = `▶️ ${info.title}`
+      this.trackInfoElement.classList.remove('hidden')
+
+      // Make canvas background transparent so video shows through
+      document.getElementById('canvas').classList.add('transparent-bg')
+      this.renderer.setTransparentBackground(true)
+
+      // Show export controls
+      document.getElementById('export-controls').classList.remove('hidden')
+
+    } catch (err) {
+      alert('Invalid YouTube URL')
+      console.error(err)
+    }
+  }
+
+  clearYouTube() {
+    youtubeEmbed.remove()
+    this.hasVideo = false
+
+    document.getElementById('youtube-url').value = ''
+    document.getElementById('youtube-clear').classList.add('hidden')
+    document.getElementById('video-settings').classList.add('hidden')
+
+    // Restore opaque canvas background
+    document.getElementById('canvas').classList.remove('transparent-bg')
+    this.renderer.setTransparentBackground(false)
+
+    if (!this.isTabCapturing && !this.isRecording && !this.isPlaying) {
+      this.trackInfoElement.classList.add('hidden')
+    }
+  }
+
   animate() {
-    if (!this.isPlaying && !this.isRecording) return
+    if (!this.isPlaying && !this.isRecording && !this.isTabCapturing) return
 
     const audioFeatures = this.audioAnalyzer.getAudioFeatures()
     const beatInfo = this.beatDetector.update(audioFeatures, performance.now())

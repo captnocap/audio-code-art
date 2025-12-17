@@ -29,14 +29,12 @@ export class FlowParticlesMode extends VisualizationMode {
 
   draw() {
     // Semi-transparent overlay for trail effect
-    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.02)'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    this.clearBackground(0.02)
     this.particleSystem.draw(this.ctx)
   }
 
   clear() {
-    this.ctx.fillStyle = '#0a0a0a'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    this.clearBackground(1)
     if (this.particleSystem) this.particleSystem.clear()
   }
 

@@ -8,6 +8,7 @@
 </head>
 <body>
   <div id="app">
+    <div id="video-container"></div>
     <canvas id="canvas"></canvas>
 
     <div id="controls">
@@ -37,6 +38,21 @@
 
       <div id="record-controls">
         <button id="record-btn" title="Record from microphone">🎤 Mic</button>
+        <button id="tab-capture-btn" title="Capture tab audio (YouTube, Spotify, etc.)">🔊 Tab</button>
+      </div>
+
+      <div id="youtube-controls">
+        <input type="text" id="youtube-url" placeholder="Paste YouTube URL..." />
+        <button id="youtube-load" title="Load YouTube video">▶️</button>
+        <button id="youtube-clear" title="Remove video" class="hidden">✕</button>
+      </div>
+
+      <div id="video-settings" class="hidden">
+        <label class="toggle" title="Show video behind canvas">
+          <input type="checkbox" id="video-toggle" checked />
+          <span class="toggle-label">Video BG</span>
+        </label>
+        <input type="range" id="video-opacity" min="0" max="100" value="30" title="Video opacity" />
       </div>
 
       <div class="separator"></div>
