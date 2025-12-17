@@ -93,6 +93,27 @@ body {
   color: #fff;
 }
 
+.mode-separator {
+  color: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
+  font-weight: 300;
+}
+
+.mode-btn.mode-3d {
+  background: rgba(136, 68, 255, 0.1);
+  border-color: rgba(136, 68, 255, 0.3);
+}
+
+.mode-btn.mode-3d:hover {
+  background: rgba(136, 68, 255, 0.2);
+  border-color: rgba(136, 68, 255, 0.4);
+}
+
+.mode-btn.mode-3d.active {
+  background: rgba(136, 68, 255, 0.3);
+  border-color: rgba(136, 68, 255, 0.6);
+}
+
 #drop-zone {
   padding: 8px 16px;
   border: 1px dashed rgba(255, 255, 255, 0.3);

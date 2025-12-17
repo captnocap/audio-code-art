@@ -1,6 +1,8 @@
 import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
+import { Renderer3D } from './visual/renderer3d.js'
+import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode } from './visual/modes3d/index.js'
 import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
 import { ASCIIRenderer } from './visual/ascii.js'
@@ -12,12 +14,14 @@ class AudioCanvas {
     this.audioAnalyzer = new AudioAnalyzer()
     this.beatDetector = new BeatDetector()
     this.renderer = null
+    this.renderer3d = null
     this.asciiRenderer = null
     this.isPlaying = false
     this.isRecording = false
     this.isTabCapturing = false
     this.isSpeechActive = false
     this.asciiMode = false
+    this.is3DMode = false
     this.animationId = null
     this.hasVideo = false
 
@@ -25,6 +29,7 @@ class AudioCanvas {
     this.initASCII()
     this.initSpeech()
     this.initPanZoom()
+    this.init3D()
   }
 
   initASCII() {
@@ -37,6 +42,57 @@ class AudioCanvas {
     this.panZoom = new PanZoom(canvas)
     // Connect panZoom to renderer for internal coordinate transforms
     this.renderer.setPanZoom(this.panZoom)
+  }
+
+  init3D() {
+    const container = document.getElementById('app')
+    this.renderer3d = new Renderer3D(container)
+    this.renderer3d.mount()
+    this.renderer3d.hide() // Hidden by default
+
+    // 3D mode classes
+    this.mode3DClasses = {
+      geometry3d: GeometryMode,
+      nebula3d: NebulaMode,
+      tunnel3d: TunnelMode,
+      protein3d: ProteinMode
+    }
+  }
+
+  set3DMode(modeName) {
+    const ModeClass = this.mode3DClasses[modeName]
+    if (!ModeClass) {
+      console.error(`Unknown 3D mode: ${modeName}`)
+      return
+    }
+
+    // Switch to 3D
+    this.is3DMode = true
+
+    // Hide 2D canvas, show 3D
+    document.getElementById('canvas').style.display = 'none'
+    this.renderer3d.show()
+
+    // Set the mode
+    const mode = new ModeClass()
+    this.renderer3d.setMode(mode)
+
+    // Start animation if not running
+    if (!this.animationId) {
+      this.animate()
+    }
+  }
+
+  set2DMode(modeName) {
+    // Switch to 2D
+    this.is3DMode = false
+
+    // Show 2D canvas, hide 3D
+    document.getElementById('canvas').style.display = 'block'
+    this.renderer3d.hide()
+
+    // Set the 2D mode
+    this.renderer.setMode(modeName)
   }
 
   initSpeech() {
@@ -64,7 +120,14 @@ class AudioCanvas {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'))
         btn.classList.add('active')
-        this.renderer.setMode(btn.dataset.mode)
+
+        const modeName = btn.dataset.mode
+        // Check if it's a 3D mode (ends with '3d')
+        if (modeName.endsWith('3d')) {
+          this.set3DMode(modeName)
+        } else {
+          this.set2DMode(modeName)
+        }
       })
     })
 
@@ -414,16 +477,27 @@ class AudioCanvas {
   animate() {
     const hasAudio = this.isPlaying || this.isRecording || this.isTabCapturing
 
-    // Stop if no audio AND no ASCII mode
-    if (!hasAudio && !this.asciiMode) return
+    // Stop if no audio AND no ASCII mode AND not in 3D mode
+    if (!hasAudio && !this.asciiMode && !this.is3DMode) return
 
     let audioFeatures = null
-    let beatInfo = { bpm: 0, onBeat: false, beatIntensity: 0, isSaturated: false }
+    let beatInfo = { bpm: 0, onBeat: false, beatIntensity: 0, isSaturated: false, normalizedTempo: 0.5 }
     let fps = 0
 
     if (hasAudio) {
       audioFeatures = this.audioAnalyzer.getAudioFeatures()
       beatInfo = this.beatDetector.update(audioFeatures, performance.now())
+    }
+
+    // Render 3D if in 3D mode
+    if (this.is3DMode) {
+      if (audioFeatures) {
+        this.renderer3d.update(audioFeatures, beatInfo)
+      }
+      this.renderer3d.render()
+      fps = 60 // Approximate, could track actual FPS
+    } else if (hasAudio) {
+      // Render 2D
       fps = this.renderer.render(audioFeatures, beatInfo)
     }
 
@@ -439,7 +513,8 @@ class AudioCanvas {
     const satText = beatInfo.isSaturated ? ' | BLAST' : ''
     const asciiText = this.asciiMode ? ' | ASCII' : ''
     const speechText = this.isSpeechActive ? ' | LYRICS' : ''
-    this.fpsElement.textContent = `${fps} FPS | ${bpmText}${satText}${asciiText}${speechText}`
+    const mode3DText = this.is3DMode ? ' | 3D' : ''
+    this.fpsElement.textContent = `${fps} FPS | ${bpmText}${satText}${asciiText}${speechText}${mode3DText}`
 
     this.animationId = requestAnimationFrame(() => this.animate())
   }
@@ -461,8 +536,13 @@ class AudioCanvas {
       return
     }
 
-    const canvas = document.getElementById('canvas')
-    const modeName = this.renderer.currentModeName
+    // Use the correct canvas based on mode
+    const canvas = this.is3DMode
+      ? this.renderer3d.renderer.domElement
+      : document.getElementById('canvas')
+    const modeName = this.is3DMode
+      ? this.renderer3d.currentModeName
+      : this.renderer.currentModeName
 
     // Update button to show recording state
     btn.textContent = '⏺ Recording...'

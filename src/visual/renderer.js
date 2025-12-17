@@ -191,7 +191,17 @@ export class Renderer {
 
   draw() {
     if (this.currentMode) {
-      // Apply pan/zoom transform before drawing
+      // Clear in screen space first (before transform)
+      // This prevents duplicate frames when zoomed
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0)
+      if (this.transparentBackground) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+      } else {
+        this.ctx.fillStyle = '#0a0a0a'
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+      }
+
+      // Apply pan/zoom transform before drawing content
       if (this.panZoom) {
         this.panZoom.applyTransform(this.ctx)
       }
