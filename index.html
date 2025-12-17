@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Canvas</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+
+    <div id="controls">
+      <div id="mode-selector">
+        <button class="mode-btn active" data-mode="flowParticles" title="Particles following flow fields">〰️ Flow</button>
+        <button class="mode-btn" data-mode="pixelSort" title="Glitchy pixel sorting">▦ Sort</button>
+        <button class="mode-btn" data-mode="mandala" title="Radial beat slices">◎ Mandala</button>
+        <button class="mode-btn" data-mode="lsystem" title="Fractal tree growth">🌿 Tree</button>
+        <button class="mode-btn" data-mode="rings" title="Concentric ring pulses">○ Rings</button>
+        <button class="mode-btn" data-mode="constellation" title="Star map">✦ Stars</button>
+        <button class="mode-btn" data-mode="terrain" title="Mountain landscape">⛰ Terrain</button>
+        <button class="mode-btn" data-mode="mirror" title="Kaleidoscope symmetry">✧ Mirror</button>
+      </div>
+
+      <div class="separator"></div>
+
+      <div id="drop-zone">
+        <span>Drop audio or click</span>
+        <input type="file" id="file-input" accept="audio/*" />
+      </div>
+
+      <div id="playback-controls" class="hidden">
+        <button id="play-btn">Play</button>
+        <button id="stop-btn">Stop</button>
+      </div>
+
+      <div id="record-controls">
+        <button id="record-btn" title="Record from microphone">🎤 Mic</button>
+      </div>
+
+      <div class="separator"></div>
+
+      <div id="export-controls" class="hidden">
+        <button id="export-png" title="Export 4K PNG">📷 PNG</button>
+      </div>
+
+      <button id="clear-btn" title="Clear canvas">🗑️</button>
+
+      <div class="separator"></div>
+
+      <label class="toggle" title="Sustained intensity during blast beats instead of pulsing">
+        <input type="checkbox" id="saturation-toggle" checked />
+        <span class="toggle-label">Blast Mode</span>
+      </label>
+    </div>
+
+    <div id="track-info" class="hidden">
+      <span id="track-name"></span>
+    </div>
+
+    <div id="info">
+      <span id="fps"></span>
+    </div>
+
+    <button id="help-btn" title="How it works">?</button>
+
+    <div id="modal-overlay" class="hidden">
+      <div id="modal">
+        <button id="modal-close">&times;</button>
+        <h1>Audio Canvas</h1>
+        <p class="subtitle">Generative art from music</p>
+
+        <section>
+          <h2>How It Works</h2>
+          <p>Audio is analyzed in real-time using the Web Audio API. Frequency data, amplitude, and beat detection feed into generative algorithms that create visuals unique to each song.</p>
+        </section>
+
+        <section>
+          <h2>The Color Formula</h2>
+          <pre>color = f(pitch, tempo, amplitude)</pre>
+          <ul>
+            <li><strong>Pitch</strong> &rarr; Hue (bass=red/orange, mids=yellow/green, highs=blue/purple/magenta)</li>
+            <li><strong>Tempo</strong> &rarr; Saturation + hue shift (fast=vibrant/electric, slow=muted/earthy)</li>
+            <li><strong>Amplitude</strong> &rarr; Brightness (quiet=dark, loud=bright)</li>
+          </ul>
+          <p>Each song produces a unique chromatic fingerprint based on its harmonic and rhythmic content.</p>
+        </section>
+
+        <section>
+          <h2>Visualization Modes</h2>
+          <div class="mode-grid">
+            <div class="mode-item">
+              <span class="mode-icon">〰️</span>
+              <strong>Flow</strong>
+              <p>Particles follow audio-reactive flow fields. Accumulates as stippled texture over time.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">▦</span>
+              <strong>Sort</strong>
+              <p>Pixel sorting triggered by amplitude. Creates glitchy, smeared horizontal bands.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">◎</span>
+              <strong>Mandala</strong>
+              <p>Radial slices spawn on beats, building outward like tree rings. A circular timeline of the song.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🌿</span>
+              <strong>Tree</strong>
+              <p>L-system fractal trees grow on beats. Branch angle and length determined by pitch.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">○</span>
+              <strong>Rings</strong>
+              <p>Concentric circles pulse outward on each beat. Hypnotic ripple patterns.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">✦</span>
+              <strong>Stars</strong>
+              <p>Stars spawn on beats and connect to nearby stars. Builds a constellation map.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">⛰</span>
+              <strong>Terrain</strong>
+              <p>Scrolling mountain range generated from waveform. Layered parallax landscape.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">✧</span>
+              <strong>Mirror</strong>
+              <p>8-way kaleidoscope symmetry. Particles are mirrored radially around center.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Blast Mode</h2>
+          <p>When enabled, detects high beat rates (&gt;8 beats/sec) like blast beats in metal. Instead of pulsing on every beat (which would be overwhelming), switches to sustained intensity for smooth flowing visuals.</p>
+        </section>
+
+        <section>
+          <h2>Controls</h2>
+          <ul>
+            <li><strong>Drop audio file</strong> or click to browse</li>
+            <li><strong>Mic</strong> - Record from microphone</li>
+            <li><strong>PNG</strong> - Export 4K image</li>
+            <li><strong>Clear</strong> - Reset canvas</li>
+            <li><strong>Mode buttons</strong> - Switch visualization (clears canvas)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Tips</h2>
+          <ul>
+            <li>Let a full song play to build up dense, detailed artwork</li>
+            <li>Try different genres - each creates distinct visual signatures</li>
+            <li>Export during interesting moments or at the end</li>
+            <li>The same song will produce similar (but not identical) results each time</li>
+          </ul>
+        </section>
+
+        <footer>
+          <p>Inspired by <a href="https://monokai.com/work" target="_blank">Monokai</a>'s generative art</p>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
