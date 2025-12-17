@@ -115,7 +115,7 @@ export class GIFExporter {
         quality: this.quality,
         width: this.width,
         height: this.height,
-        workerScript: '/public/gif.worker.js'
+        workerScript: '/gif.worker.js'
       })
 
       // Add frames
