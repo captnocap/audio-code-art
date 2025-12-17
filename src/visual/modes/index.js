@@ -21,6 +21,22 @@ export { IsometricMode } from './isometric.js'
 export { CymaticsMode } from './cymatics.js'
 export { ReactionDiffusionMode } from './reactiondiffusion.js'
 
+// Chemistry modes
+export { MolecularMode } from './molecular.js'
+export { CrystalMode } from './crystal.js'
+export { OrbitalsMode } from './orbitals.js'
+export { CombustionMode } from './combustion.js'
+export { TitrationMode } from './titration.js'
+export { PolymerMode } from './polymer.js'
+export { ElectrochemistryMode } from './electrochemistry.js'
+
+// Fractal modes
+export { MandelbrotMode } from './mandelbrot.js'
+export { PipesMode } from './pipes.js'
+
+// Meta modes
+export { JSXGenMode } from './jsxgen.js'
+
 // Registry of all available modes
 export const MODES = {
   flowParticles: {
@@ -146,6 +162,72 @@ export const MODES = {
     name: 'Reaction-Diffusion',
     description: 'Organic Gray-Scott chemical patterns',
     icon: '🧫'
+  },
+
+  // Chemistry visualization modes
+  molecular: {
+    class: () => import('./molecular.js').then(m => m.MolecularMode),
+    name: 'Molecular Dynamics',
+    description: 'Atoms forming and breaking chemical bonds',
+    icon: '⚛'
+  },
+  crystal: {
+    class: () => import('./crystal.js').then(m => m.CrystalMode),
+    name: 'Crystal Growth',
+    description: 'Dendritic crystal nucleation and growth',
+    icon: '❄'
+  },
+  orbitals: {
+    class: () => import('./orbitals.js').then(m => m.OrbitalsMode),
+    name: 'Electron Orbitals',
+    description: 'Quantum probability clouds (s, p, d, f)',
+    icon: '☢'
+  },
+  combustion: {
+    class: () => import('./combustion.js').then(m => m.CombustionMode),
+    name: 'Combustion',
+    description: 'Realistic fire with chemical reactions',
+    icon: '🔥'
+  },
+  titration: {
+    class: () => import('./titration.js').then(m => m.TitrationMode),
+    name: 'pH Titration',
+    description: 'Color-changing pH indicator solution',
+    icon: '🧪'
+  },
+  polymer: {
+    class: () => import('./polymer.js').then(m => m.PolymerMode),
+    name: 'Polymerization',
+    description: 'Chain reactions building polymer structures',
+    icon: '🔗'
+  },
+  electrochemistry: {
+    class: () => import('./electrochemistry.js').then(m => m.ElectrochemistryMode),
+    name: 'Electrochemistry',
+    description: 'Electrochemical cells with electron flow',
+    icon: '⚡'
+  },
+  pipes: {
+    class: () => import('./pipes.js').then(m => m.PipesMode),
+    name: '3D Pipes',
+    description: 'Classic Windows screensaver - pipes grow and turn',
+    icon: '🔧'
+  },
+
+  // Fractal modes
+  mandelbrot: {
+    class: () => import('./mandelbrot.js').then(m => m.MandelbrotMode),
+    name: 'Mandelbrot',
+    description: 'Audio-reactive fractal exploration with Julia morphing',
+    icon: '🌀'
+  },
+
+  // Meta modes
+  jsxgen: {
+    class: () => import('./jsxgen.js').then(m => m.JSXGenMode),
+    name: 'JSX Generator',
+    description: 'Generate React components from audio - songs become design systems',
+    icon: '⚛️'
   }
 }
 

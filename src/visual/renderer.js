@@ -18,6 +18,16 @@ import { StainedGlassMode } from './modes/stainedglass.js'
 import { IsometricMode } from './modes/isometric.js'
 import { CymaticsMode } from './modes/cymatics.js'
 import { ReactionDiffusionMode } from './modes/reactiondiffusion.js'
+import { MolecularMode } from './modes/molecular.js'
+import { CrystalMode } from './modes/crystal.js'
+import { OrbitalsMode } from './modes/orbitals.js'
+import { CombustionMode } from './modes/combustion.js'
+import { TitrationMode } from './modes/titration.js'
+import { PolymerMode } from './modes/polymer.js'
+import { ElectrochemistryMode } from './modes/electrochemistry.js'
+import { PipesMode } from './modes/pipes.js'
+import { MandelbrotMode } from './modes/mandelbrot.js'
+import { JSXGenMode } from './modes/jsxgen.js'
 import { svgExporter } from '../export/svg.js'
 
 const MODE_CLASSES = {
@@ -39,7 +49,17 @@ const MODE_CLASSES = {
   stainedglass: StainedGlassMode,
   isometric: IsometricMode,
   cymatics: CymaticsMode,
-  reactiondiffusion: ReactionDiffusionMode
+  reactiondiffusion: ReactionDiffusionMode,
+  molecular: MolecularMode,
+  crystal: CrystalMode,
+  orbitals: OrbitalsMode,
+  combustion: CombustionMode,
+  titration: TitrationMode,
+  polymer: PolymerMode,
+  electrochemistry: ElectrochemistryMode,
+  pipes: PipesMode,
+  mandelbrot: MandelbrotMode,
+  jsxgen: JSXGenMode
 }
 
 export class Renderer {

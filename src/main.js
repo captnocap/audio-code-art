@@ -5,6 +5,7 @@ import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
 import { ASCIIRenderer } from './visual/ascii.js'
 import { PanZoom } from './visual/panzoom.js'
+import { gifExporter } from './export/gif.js'
 
 class AudioCanvas {
   constructor() {
@@ -152,6 +153,7 @@ class AudioCanvas {
     // Export buttons
     document.getElementById('export-png').addEventListener('click', () => this.exportPNG())
     document.getElementById('export-svg').addEventListener('click', () => this.exportSVG())
+    document.getElementById('export-gif').addEventListener('click', () => this.exportGIF())
 
     // Clear button
     document.getElementById('clear-btn').addEventListener('click', () => {
@@ -448,6 +450,54 @@ class AudioCanvas {
 
   exportSVG() {
     this.renderer.exportSVG()
+  }
+
+  async exportGIF() {
+    const btn = document.getElementById('export-gif')
+    const originalText = btn.textContent
+
+    // Check if already recording
+    if (gifExporter.isRecording) {
+      return
+    }
+
+    const canvas = document.getElementById('canvas')
+    const modeName = this.renderer.currentModeName
+
+    // Update button to show recording state
+    btn.textContent = '⏺ Recording...'
+    btn.classList.add('recording')
+
+    // Progress callback
+    gifExporter.onProgress = (progress) => {
+      if (gifExporter.isRecording) {
+        btn.textContent = `⏺ ${Math.floor(progress * 100)}%`
+      } else {
+        btn.textContent = `⚙️ ${Math.floor(progress * 100)}%`
+      }
+    }
+
+    try {
+      // Record for 5 seconds at 20fps, output at 800x450
+      await gifExporter.recordAndDownload(
+        canvas,
+        `audio-canvas-${modeName}-${Date.now()}.gif`,
+        {
+          duration: 5000,
+          fps: 20,
+          width: 800,
+          height: 450,
+          quality: 10
+        }
+      )
+    } catch (err) {
+      console.error('GIF export failed:', err)
+      alert('GIF export failed: ' + err.message)
+    }
+
+    // Reset button
+    btn.textContent = originalText
+    btn.classList.remove('recording')
   }
 }
 

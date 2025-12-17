@@ -218,7 +218,15 @@ export class VoronoiMode extends VisualizationMode {
   }
 
   renderVoronoi() {
+    // Guard: need sites to render
+    if (!this.sites || this.sites.length === 0) {
+      this.createSites()
+      if (this.sites.length === 0) return
+    }
+
     const ctx = this.offscreenCtx
+    if (!ctx) return
+
     const imageData = ctx.createImageData(this.width, this.height)
     const data = imageData.data
 

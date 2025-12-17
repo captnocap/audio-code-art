@@ -47,18 +47,17 @@ export class LSystemMode extends VisualizationMode {
     const { amplitude, centroid, bass, mid, high } = audioFeatures
     const { onBeat, beatIntensity, normalizedTempo, isSaturated } = beatInfo
 
-    // Determine if we should grow - on beat OR during saturation OR high amplitude
-    const shouldGrow = onBeat ||
-                       (isSaturated && Math.random() < 0.15) ||
-                       (amplitude > 0.5 && Math.random() < amplitude * 0.1)
+    // Grow much more aggressively - always grow if there's any audio
+    const baseGrowthChance = 0.8  // 80% chance each frame
+    const shouldGrow = amplitude > 0.05 && Math.random() < baseGrowthChance
 
     // Grow branches from active tips
     if (shouldGrow && this.activeTips.length > 0) {
-      const intensity = onBeat ? beatIntensity : (isSaturated ? 0.6 : amplitude)
+      const intensity = Math.max(amplitude, onBeat ? beatIntensity : 0.3)
       const newTips = []
 
-      // Process some tips (not all, to control growth rate)
-      const tipsToGrow = Math.min(this.activeTips.length, 5 + Math.floor(intensity * 10))
+      // Process many more tips per frame (30x increase)
+      const tipsToGrow = Math.min(this.activeTips.length, 20 + Math.floor(intensity * 50))
 
       for (let i = 0; i < tipsToGrow; i++) {
         const tip = this.activeTips[i]
@@ -124,29 +123,33 @@ export class LSystemMode extends VisualizationMode {
       // Remove processed tips, add new ones
       this.activeTips = this.activeTips.slice(tipsToGrow).concat(newTips)
 
-      // Limit total tips
-      if (this.activeTips.length > 100) {
-        this.activeTips = this.activeTips.slice(-100)
+      // Limit total tips (increased for faster growth)
+      if (this.activeTips.length > 500) {
+        this.activeTips = this.activeTips.slice(-500)
       }
     }
 
-    // Continuous subtle leaf/particle growth at tips
-    if (amplitude > 0.3 && this.activeTips.length > 0) {
-      const tip = this.activeTips[Math.floor(Math.random() * this.activeTips.length)]
-      const rgb = pitchTempoToRGB(centroid, normalizedTempo, amplitude)
+    // Continuous leaf/particle growth at tips - much more active
+    if (amplitude > 0.1 && this.activeTips.length > 0) {
+      // Add multiple leaves per frame
+      const leafCount = Math.floor(3 + amplitude * 10)
+      for (let i = 0; i < leafCount; i++) {
+        const tip = this.activeTips[Math.floor(Math.random() * this.activeTips.length)]
+        const rgb = pitchTempoToRGB(centroid, normalizedTempo, amplitude)
 
-      // Small leaf/particle
-      this.branches.push({
-        x1: tip.x,
-        y1: tip.y,
-        x2: tip.x + (Math.random() - 0.5) * 10,
-        y2: tip.y + (Math.random() - 0.5) * 10,
-        thickness: 2 + amplitude * 3,
-        rgb,
-        isLeaf: true,
-        depth: tip.depth,
-        birth: Date.now()
-      })
+        // Small leaf/particle
+        this.branches.push({
+          x1: tip.x,
+          y1: tip.y,
+          x2: tip.x + (Math.random() - 0.5) * 10,
+          y2: tip.y + (Math.random() - 0.5) * 10,
+          thickness: 2 + amplitude * 3,
+          rgb,
+          isLeaf: true,
+          depth: tip.depth,
+          birth: Date.now()
+        })
+      }
     }
   }
 
