@@ -44,14 +44,20 @@ export class LSystemMode extends VisualizationMode {
 
   update(audioFeatures, beatInfo) {
     const { amplitude, centroid, bass, mid, high } = audioFeatures
-    const { onBeat, beatIntensity, normalizedTempo } = beatInfo
+    const { onBeat, beatIntensity, normalizedTempo, isSaturated } = beatInfo
 
-    // On beat, grow branches from active tips
-    if (onBeat && this.activeTips.length > 0) {
+    // Determine if we should grow - on beat OR during saturation OR high amplitude
+    const shouldGrow = onBeat ||
+                       (isSaturated && Math.random() < 0.15) ||
+                       (amplitude > 0.5 && Math.random() < amplitude * 0.1)
+
+    // Grow branches from active tips
+    if (shouldGrow && this.activeTips.length > 0) {
+      const intensity = onBeat ? beatIntensity : (isSaturated ? 0.6 : amplitude)
       const newTips = []
 
       // Process some tips (not all, to control growth rate)
-      const tipsToGrow = Math.min(this.activeTips.length, 5 + Math.floor(beatIntensity * 10))
+      const tipsToGrow = Math.min(this.activeTips.length, 5 + Math.floor(intensity * 10))
 
       for (let i = 0; i < tipsToGrow; i++) {
         const tip = this.activeTips[i]

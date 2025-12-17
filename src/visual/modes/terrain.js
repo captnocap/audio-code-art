@@ -9,21 +9,33 @@ export class TerrainMode extends VisualizationMode {
     this.name = 'terrain'
     this.description = 'Scrolling mountain terrain generated from waveform'
     this.layers = []
-    this.numLayers = 5
+    this.numLayers = 24  // Many more layers
     this.historyLength = 200
     this.scrollSpeed = 2
+    this.layerColors = []  // Track colors to ensure uniqueness
   }
 
   init() {
     this.layers = []
+    this.layerColors = []
+
     for (let i = 0; i < this.numLayers; i++) {
+      const depth = i / this.numLayers
+
+      // Assign each layer a unique hue offset to ensure color variety
+      // Spread across the spectrum with some randomness
+      const hueOffset = (i / this.numLayers) + (Math.random() * 0.1 - 0.05)
+
       this.layers.push({
         heights: new Array(this.historyLength).fill(0),
         colors: new Array(this.historyLength).fill(null),
-        depth: i / this.numLayers,  // 0 = front, 1 = back
-        yBase: this.height * (0.9 - i * 0.15),
-        amplitude: 0.3 - i * 0.04,
-        scrollOffset: 0
+        depth,
+        yBase: this.height * (0.95 - i * (0.7 / this.numLayers)),  // Spread across more of screen
+        amplitude: 0.15 - depth * 0.08,  // Front layers taller
+        scrollOffset: 0,
+        hueOffset,  // Unique color offset for this layer
+        freqBand: i % 8,  // Cycle through frequency bands
+        speedVariance: 0.8 + Math.random() * 0.4  // Slight speed variation
       })
     }
   }
@@ -31,28 +43,64 @@ export class TerrainMode extends VisualizationMode {
   resize(width, height) {
     super.resize(width, height)
     for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].yBase = height * (0.9 - i * 0.15)
+      const depth = i / this.numLayers
+      this.layers[i].yBase = height * (0.95 - i * (0.7 / this.numLayers))
     }
+  }
+
+  // Ensure color is distinct from nearby layers
+  getDistinctColor(baseHue, layerIndex, normalizedTempo, amplitude) {
+    const layer = this.layers[layerIndex]
+
+    // Shift hue based on layer's unique offset
+    let hue = baseHue + layer.hueOffset
+
+    // Ensure hue wraps correctly
+    if (hue > 1) hue -= 1
+    if (hue < 0) hue += 1
+
+    // Vary saturation and lightness by depth
+    const depthFactor = 1 - layer.depth * 0.5
+    const satBoost = (layerIndex % 3) * 0.1  // Alternate saturation
+
+    return pitchTempoToRGB(hue, normalizedTempo + satBoost, amplitude * depthFactor)
   }
 
   update(audioFeatures, beatInfo) {
     const { amplitude, centroid, bass, mid, high, frequencies } = audioFeatures
     const { normalizedTempo, beatIntensity, onBeat } = beatInfo
 
-    // Sample different frequency ranges for different layers
-    const freqBands = [bass, mid * 0.8 + bass * 0.2, mid, high * 0.5 + mid * 0.5, high]
+    // More granular frequency bands for 24 layers
+    const freqBands = [
+      bass,
+      bass * 0.8 + mid * 0.2,
+      bass * 0.6 + mid * 0.4,
+      bass * 0.4 + mid * 0.6,
+      bass * 0.2 + mid * 0.8,
+      mid,
+      mid * 0.8 + high * 0.2,
+      high * 0.4 + mid * 0.6,
+      high * 0.6 + mid * 0.4,
+      high * 0.8 + mid * 0.2,
+      high,
+      amplitude  // Fallback
+    ]
 
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i]
-      const bandValue = freqBands[i] || amplitude
+      const bandIndex = layer.freqBand % freqBands.length
+      const bandValue = freqBands[bandIndex]
 
-      // Scroll
-      layer.scrollOffset += this.scrollSpeed * (0.5 + layer.depth * 0.5)
+      // Scroll with layer-specific speed
+      layer.scrollOffset += this.scrollSpeed * (0.3 + layer.depth * 0.7) * layer.speedVariance
 
-      // Add new height value
-      const newHeight = bandValue * this.height * layer.amplitude
+      // Add new height value with some per-layer variation
+      const heightVariance = 1 + Math.sin(Date.now() * 0.001 + i) * 0.2
+      const newHeight = bandValue * this.height * layer.amplitude * heightVariance
       layer.heights.push(newHeight)
-      layer.colors.push(pitchTempoToRGB(centroid, normalizedTempo, bandValue))
+
+      // Get distinct color for this layer
+      layer.colors.push(this.getDistinctColor(centroid, i, normalizedTempo, bandValue))
 
       // Remove old values
       if (layer.heights.length > this.historyLength) {
@@ -77,11 +125,14 @@ export class TerrainMode extends VisualizationMode {
   }
 
   drawLayer(layer, index) {
-    const { heights, colors, yBase, depth } = layer
+    const { heights, colors, yBase, depth, hueOffset } = layer
     const segmentWidth = this.width / (heights.length - 1)
 
-    // Depth-based darkening
-    const depthFade = 1 - depth * 0.6
+    // Depth-based darkening - back layers darker
+    const depthFade = 1 - depth * 0.7
+
+    // Opacity varies by layer to create depth
+    const layerOpacity = 0.6 + (1 - depth) * 0.35
 
     this.ctx.beginPath()
     this.ctx.moveTo(0, this.height)
@@ -108,16 +159,24 @@ export class TerrainMode extends VisualizationMode {
 
     // Create gradient fill based on recent colors
     const recentColor = colors[colors.length - 1] || { r: 100, g: 100, b: 100 }
-    const gradient = this.ctx.createLinearGradient(0, yBase - this.height * 0.3, 0, this.height)
-    gradient.addColorStop(0, `rgba(${recentColor.r * depthFade}, ${recentColor.g * depthFade}, ${recentColor.b * depthFade}, 0.9)`)
-    gradient.addColorStop(1, `rgba(${recentColor.r * depthFade * 0.3}, ${recentColor.g * depthFade * 0.3}, ${recentColor.b * depthFade * 0.3}, 0.95)`)
+
+    // Apply depth fade to colors
+    const r = Math.floor(recentColor.r * depthFade)
+    const g = Math.floor(recentColor.g * depthFade)
+    const b = Math.floor(recentColor.b * depthFade)
+
+    const gradient = this.ctx.createLinearGradient(0, yBase - this.height * 0.2, 0, yBase + 50)
+    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${layerOpacity})`)
+    gradient.addColorStop(0.7, `rgba(${Math.floor(r * 0.5)}, ${Math.floor(g * 0.5)}, ${Math.floor(b * 0.5)}, ${layerOpacity * 0.9})`)
+    gradient.addColorStop(1, `rgba(${Math.floor(r * 0.2)}, ${Math.floor(g * 0.2)}, ${Math.floor(b * 0.2)}, ${layerOpacity * 0.8})`)
 
     this.ctx.fillStyle = gradient
     this.ctx.fill()
 
-    // Subtle edge highlight on front layers
-    if (index < 2) {
-      this.ctx.strokeStyle = `rgba(${recentColor.r}, ${recentColor.g}, ${recentColor.b}, ${0.3 * depthFade})`
+    // Edge highlight on front layers for definition
+    if (index < 6) {
+      const highlightAlpha = (1 - index / 6) * 0.4 * depthFade
+      this.ctx.strokeStyle = `rgba(${Math.min(255, r + 50)}, ${Math.min(255, g + 50)}, ${Math.min(255, b + 50)}, ${highlightAlpha})`
       this.ctx.lineWidth = 1
       this.ctx.stroke()
     }

@@ -36,13 +36,19 @@ export class ConstellationMode extends VisualizationMode {
       }
     }
 
-    // Continuous spawning during sustained intensity
-    if (isSaturated && Math.random() < 0.2) {
-      this.spawnStar(audioFeatures, beatInfo)
+    // More aggressive spawning during sustained intensity (blast beats)
+    if (isSaturated) {
+      // Spawn multiple stars per frame during saturation
+      const saturationSpawns = Math.floor(2 + amplitude * 3)
+      for (let i = 0; i < saturationSpawns; i++) {
+        if (Math.random() < 0.4) {
+          this.spawnStar(audioFeatures, beatInfo)
+        }
+      }
     }
 
-    // Subtle continuous spawning
-    if (amplitude > 0.4 && Math.random() < amplitude * 0.1) {
+    // Continuous spawning based on amplitude
+    if (amplitude > 0.3 && Math.random() < amplitude * 0.2) {
       this.spawnStar(audioFeatures, beatInfo)
     }
 
