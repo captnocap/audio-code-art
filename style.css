@@ -45,7 +45,10 @@ body {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   padding: 12px 20px;
+  max-width: 95vw;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -62,6 +65,9 @@ body {
 #mode-selector {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
+  max-width: 600px;
+  justify-content: center;
 }
 
 .mode-btn {

@@ -8,6 +8,16 @@ import { ConstellationMode } from './modes/constellation.js'
 import { TerrainMode } from './modes/terrain.js'
 import { MirrorMode } from './modes/mirror.js'
 import { PlotterMode } from './modes/plotter.js'
+import { SpirographMode } from './modes/spirograph.js'
+import { AutomataMode } from './modes/automata.js'
+import { OrbitsMode } from './modes/orbits.js'
+import { VoronoiMode } from './modes/voronoi.js'
+import { MyceliumMode } from './modes/mycelium.js'
+import { ContoursMode } from './modes/contours.js'
+import { StainedGlassMode } from './modes/stainedglass.js'
+import { IsometricMode } from './modes/isometric.js'
+import { CymaticsMode } from './modes/cymatics.js'
+import { ReactionDiffusionMode } from './modes/reactiondiffusion.js'
 import { svgExporter } from '../export/svg.js'
 
 const MODE_CLASSES = {
@@ -19,7 +29,17 @@ const MODE_CLASSES = {
   constellation: ConstellationMode,
   terrain: TerrainMode,
   mirror: MirrorMode,
-  plotter: PlotterMode
+  plotter: PlotterMode,
+  spirograph: SpirographMode,
+  automata: AutomataMode,
+  orbits: OrbitsMode,
+  voronoi: VoronoiMode,
+  mycelium: MyceliumMode,
+  contours: ContoursMode,
+  stainedglass: StainedGlassMode,
+  isometric: IsometricMode,
+  cymatics: CymaticsMode,
+  reactiondiffusion: ReactionDiffusionMode
 }
 
 export class Renderer {
@@ -45,8 +65,15 @@ export class Renderer {
     // Background transparency (for YouTube overlay)
     this.transparentBackground = false
 
+    // Pan/zoom reference (set externally)
+    this.panZoom = null
+
     this.resize()
     window.addEventListener('resize', () => this.resize())
+  }
+
+  setPanZoom(panZoom) {
+    this.panZoom = panZoom
   }
 
   setTransparentBackground(transparent) {
@@ -112,11 +139,13 @@ export class Renderer {
   }
 
   clear() {
+    // Always clear in screen space first
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0)
     if (this.transparentBackground) {
-      this.ctx.clearRect(0, 0, this.width, this.height)
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     } else {
       this.ctx.fillStyle = '#0a0a0a'
-      this.ctx.fillRect(0, 0, this.width, this.height)
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     }
     if (this.currentMode) {
       this.currentMode.clear()
@@ -142,7 +171,17 @@ export class Renderer {
 
   draw() {
     if (this.currentMode) {
+      // Apply pan/zoom transform before drawing
+      if (this.panZoom) {
+        this.panZoom.applyTransform(this.ctx)
+      }
+
       this.currentMode.draw()
+
+      // Reset transform after drawing
+      if (this.panZoom) {
+        this.panZoom.resetTransform(this.ctx)
+      }
     }
   }
 

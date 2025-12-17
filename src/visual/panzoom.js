@@ -1,14 +1,16 @@
-// Pan and Zoom functionality for the canvas
+// Pan and Zoom functionality for infinite canvas
+// Uses internal coordinate transform instead of CSS transform
+// Canvas always fills screen, content scales/pans within it
 
 export class PanZoom {
   constructor(canvas) {
     this.canvas = canvas
-    this.container = canvas.parentElement
+    this.ctx = canvas.getContext('2d')
 
-    // Transform state
+    // Transform state (internal coordinates, not CSS)
     this.scale = 1
-    this.translateX = 0
-    this.translateY = 0
+    this.offsetX = 0
+    this.offsetY = 0
 
     // Interaction state
     this.isDragging = false
@@ -16,53 +18,64 @@ export class PanZoom {
     this.lastY = 0
 
     // Limits
-    this.minScale = 0.25
-    this.maxScale = 10
+    this.minScale = 0.1
+    this.maxScale = 20
 
     this.init()
   }
 
   init() {
-    // Create wrapper for transforms
-    this.wrapper = document.createElement('div')
-    this.wrapper.id = 'canvas-wrapper'
-    this.wrapper.style.cssText = `
-      position: absolute;
-      inset: 0;
-      transform-origin: center center;
-      will-change: transform;
-    `
-
-    // Move canvas into wrapper
-    this.canvas.parentElement.insertBefore(this.wrapper, this.canvas)
-    this.wrapper.appendChild(this.canvas)
-
-    // Mouse events
-    this.wrapper.addEventListener('mousedown', (e) => this.onMouseDown(e))
+    // Mouse events directly on canvas
+    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e))
     window.addEventListener('mousemove', (e) => this.onMouseMove(e))
     window.addEventListener('mouseup', () => this.onMouseUp())
 
     // Wheel zoom
-    this.wrapper.addEventListener('wheel', (e) => this.onWheel(e), { passive: false })
+    this.canvas.addEventListener('wheel', (e) => this.onWheel(e), { passive: false })
 
     // Touch events for mobile
-    this.wrapper.addEventListener('touchstart', (e) => this.onTouchStart(e))
-    this.wrapper.addEventListener('touchmove', (e) => this.onTouchMove(e))
-    this.wrapper.addEventListener('touchend', () => this.onTouchEnd())
+    this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e))
+    this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e))
+    this.canvas.addEventListener('touchend', () => this.onTouchEnd())
 
     // Double-click to reset
-    this.wrapper.addEventListener('dblclick', () => this.reset())
+    this.canvas.addEventListener('dblclick', () => this.reset())
 
-    this.updateTransform()
+    this.canvas.style.cursor = 'grab'
+  }
+
+  // Apply transform to canvas context before drawing
+  applyTransform(ctx) {
+    ctx.setTransform(this.scale, 0, 0, this.scale, this.offsetX, this.offsetY)
+  }
+
+  // Reset transform after drawing
+  resetTransform(ctx) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+  }
+
+  // Convert screen coordinates to world coordinates
+  screenToWorld(screenX, screenY) {
+    return {
+      x: (screenX - this.offsetX) / this.scale,
+      y: (screenY - this.offsetY) / this.scale
+    }
+  }
+
+  // Convert world coordinates to screen coordinates
+  worldToScreen(worldX, worldY) {
+    return {
+      x: worldX * this.scale + this.offsetX,
+      y: worldY * this.scale + this.offsetY
+    }
   }
 
   onMouseDown(e) {
-    // Only pan with middle mouse or when holding space
-    if (e.button === 1 || e.button === 0) {
+    if (e.button === 0) {
       this.isDragging = true
       this.lastX = e.clientX
       this.lastY = e.clientY
-      this.wrapper.style.cursor = 'grabbing'
+      this.canvas.style.cursor = 'grabbing'
       e.preventDefault()
     }
   }
@@ -73,26 +86,24 @@ export class PanZoom {
     const dx = e.clientX - this.lastX
     const dy = e.clientY - this.lastY
 
-    this.translateX += dx
-    this.translateY += dy
+    this.offsetX += dx
+    this.offsetY += dy
 
     this.lastX = e.clientX
     this.lastY = e.clientY
-
-    this.updateTransform()
   }
 
   onMouseUp() {
     this.isDragging = false
-    this.wrapper.style.cursor = 'grab'
+    this.canvas.style.cursor = 'grab'
   }
 
   onWheel(e) {
     e.preventDefault()
 
-    const rect = this.wrapper.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left - rect.width / 2
-    const mouseY = e.clientY - rect.top - rect.height / 2
+    const rect = this.canvas.getBoundingClientRect()
+    const mouseX = e.clientX - rect.left
+    const mouseY = e.clientY - rect.top
 
     // Zoom direction
     const delta = -e.deltaY * 0.001
@@ -100,11 +111,12 @@ export class PanZoom {
 
     // Zoom toward mouse position
     const scaleRatio = newScale / this.scale
-    this.translateX = mouseX - (mouseX - this.translateX) * scaleRatio
-    this.translateY = mouseY - (mouseY - this.translateY) * scaleRatio
+
+    // Adjust offset so zoom centers on mouse
+    this.offsetX = mouseX - (mouseX - this.offsetX) * scaleRatio
+    this.offsetY = mouseY - (mouseY - this.offsetY) * scaleRatio
 
     this.scale = newScale
-    this.updateTransform()
   }
 
   // Touch handling
@@ -115,6 +127,7 @@ export class PanZoom {
       this.lastY = e.touches[0].clientY
     } else if (e.touches.length === 2) {
       this.lastPinchDist = this.getPinchDistance(e.touches)
+      this.pinchCenter = this.getPinchCenter(e.touches)
     }
   }
 
@@ -123,23 +136,25 @@ export class PanZoom {
       const dx = e.touches[0].clientX - this.lastX
       const dy = e.touches[0].clientY - this.lastY
 
-      this.translateX += dx
-      this.translateY += dy
+      this.offsetX += dx
+      this.offsetY += dy
 
       this.lastX = e.touches[0].clientX
       this.lastY = e.touches[0].clientY
-
-      this.updateTransform()
       e.preventDefault()
     } else if (e.touches.length === 2) {
       // Pinch zoom
       const dist = this.getPinchDistance(e.touches)
+      const center = this.getPinchCenter(e.touches)
       const delta = (dist - this.lastPinchDist) * 0.01
+      const newScale = Math.max(this.minScale, Math.min(this.maxScale, this.scale * (1 + delta)))
 
-      this.scale = Math.max(this.minScale, Math.min(this.maxScale, this.scale * (1 + delta)))
+      const scaleRatio = newScale / this.scale
+      this.offsetX = center.x - (center.x - this.offsetX) * scaleRatio
+      this.offsetY = center.y - (center.y - this.offsetY) * scaleRatio
+
+      this.scale = newScale
       this.lastPinchDist = dist
-
-      this.updateTransform()
       e.preventDefault()
     }
   }
@@ -154,48 +169,63 @@ export class PanZoom {
     return Math.sqrt(dx * dx + dy * dy)
   }
 
-  updateTransform() {
-    this.wrapper.style.transform = `translate(${this.translateX}px, ${this.translateY}px) scale(${this.scale})`
+  getPinchCenter(touches) {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2
+    }
   }
 
   reset() {
     this.scale = 1
-    this.translateX = 0
-    this.translateY = 0
-    this.updateTransform()
+    this.offsetX = 0
+    this.offsetY = 0
   }
 
   // Get current state
   getState() {
     return {
       scale: this.scale,
-      translateX: this.translateX,
-      translateY: this.translateY
+      offsetX: this.offsetX,
+      offsetY: this.offsetY
     }
   }
 
-  // Set state
-  setState(state) {
-    this.scale = state.scale ?? this.scale
-    this.translateX = state.translateX ?? this.translateX
-    this.translateY = state.translateY ?? this.translateY
-    this.updateTransform()
+  // Get visible world bounds (for infinite canvas - what area is currently visible)
+  getVisibleBounds(screenWidth, screenHeight) {
+    const topLeft = this.screenToWorld(0, 0)
+    const bottomRight = this.screenToWorld(screenWidth, screenHeight)
+    return {
+      minX: topLeft.x,
+      minY: topLeft.y,
+      maxX: bottomRight.x,
+      maxY: bottomRight.y,
+      width: bottomRight.x - topLeft.x,
+      height: bottomRight.y - topLeft.y
+    }
   }
 
-  // Zoom to fit
-  zoomToFit() {
-    this.reset()
-  }
-
-  // Zoom in
+  // Zoom in (toward center)
   zoomIn() {
-    this.scale = Math.min(this.maxScale, this.scale * 1.2)
-    this.updateTransform()
+    const centerX = this.canvas.width / 2
+    const centerY = this.canvas.height / 2
+    const newScale = Math.min(this.maxScale, this.scale * 1.25)
+    const scaleRatio = newScale / this.scale
+
+    this.offsetX = centerX - (centerX - this.offsetX) * scaleRatio
+    this.offsetY = centerY - (centerY - this.offsetY) * scaleRatio
+    this.scale = newScale
   }
 
-  // Zoom out
+  // Zoom out (from center)
   zoomOut() {
-    this.scale = Math.max(this.minScale, this.scale / 1.2)
-    this.updateTransform()
+    const centerX = this.canvas.width / 2
+    const centerY = this.canvas.height / 2
+    const newScale = Math.max(this.minScale, this.scale / 1.25)
+    const scaleRatio = newScale / this.scale
+
+    this.offsetX = centerX - (centerX - this.offsetX) * scaleRatio
+    this.offsetY = centerY - (centerY - this.offsetY) * scaleRatio
+    this.scale = newScale
   }
 }

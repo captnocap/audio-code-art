@@ -34,6 +34,8 @@ class AudioCanvas {
   initPanZoom() {
     const canvas = document.getElementById('canvas')
     this.panZoom = new PanZoom(canvas)
+    // Connect panZoom to renderer for internal coordinate transforms
+    this.renderer.setPanZoom(this.panZoom)
   }
 
   initSpeech() {

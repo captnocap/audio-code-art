@@ -22,6 +22,16 @@
         <button class="mode-btn" data-mode="terrain" title="Mountain landscape">⛰ Terrain</button>
         <button class="mode-btn" data-mode="mirror" title="Kaleidoscope symmetry">✧ Mirror</button>
         <button class="mode-btn" data-mode="plotter" title="Single continuous line for pen plotters">✎ Plotter</button>
+        <button class="mode-btn" data-mode="spirograph" title="Audio-modulated mathematical curves">❋ Spiro</button>
+        <button class="mode-btn" data-mode="automata" title="Game of Life with audio-modulated rules">▣ Life</button>
+        <button class="mode-btn" data-mode="orbits" title="Particles orbiting gravitational attractors">◉ Orbits</button>
+        <button class="mode-btn" data-mode="voronoi" title="Cellular patterns that fracture on beats">⬡ Voronoi</button>
+        <button class="mode-btn" data-mode="mycelium" title="Organic branching network growth">🍄 Mycelium</button>
+        <button class="mode-btn" data-mode="contours" title="Audio height field with contour lines">≋ Contours</button>
+        <button class="mode-btn" data-mode="stainedglass" title="Delaunay mosaic with rippling colors">◇ Glass</button>
+        <button class="mode-btn" data-mode="isometric" title="Procedural cityscapes that breathe with audio">🏙 City</button>
+        <button class="mode-btn" data-mode="cymatics" title="Chladni plate standing wave patterns">〇 Cymatics</button>
+        <button class="mode-btn" data-mode="reactiondiffusion" title="Organic Gray-Scott chemical patterns">🧫 R-D</button>
       </div>
 
       <div class="separator"></div>
@@ -172,6 +182,56 @@
               <strong>Plotter</strong>
               <p>Single continuous line that never lifts. Perfect for pen plotters like AxiDraw.</p>
             </div>
+            <div class="mode-item">
+              <span class="mode-icon">❋</span>
+              <strong>Spiro</strong>
+              <p>Audio-modulated spirograph patterns. Mathematical curves driven by frequency.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">▣</span>
+              <strong>Life</strong>
+              <p>Cellular automata (Game of Life) with audio-modulated rules and birth rates.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">◉</span>
+              <strong>Orbits</strong>
+              <p>Particles orbit gravitational attractors. Audio affects gravity and orbital paths.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">⬡</span>
+              <strong>Voronoi</strong>
+              <p>Cellular patterns that fracture and reform on beats. Geometric tessellation.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🍄</span>
+              <strong>Mycelium</strong>
+              <p>Organic branching network growth. Audio feeds the fungal network expansion.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">≋</span>
+              <strong>Contours</strong>
+              <p>Topographic contour lines over an audio-reactive height field.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">◇</span>
+              <strong>Glass</strong>
+              <p>Delaunay triangulation mosaic with rippling colors like stained glass.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🏙</span>
+              <strong>City</strong>
+              <p>Procedural isometric cityscapes that breathe and pulse with audio.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">〇</span>
+              <strong>Cymatics</strong>
+              <p>Chladni plate standing wave patterns. Frequency determines modal shapes.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🧫</span>
+              <strong>R-D</strong>
+              <p>Reaction-diffusion (Gray-Scott) organic chemical patterns evolving with audio.</p>
+            </div>
           </div>
         </section>
 
@@ -185,20 +245,31 @@
           <ul>
             <li><strong>Drop audio file</strong> or click to browse</li>
             <li><strong>Mic</strong> - Record from microphone</li>
+            <li><strong>Tab</strong> - Capture audio from browser tab (YouTube, Spotify)</li>
             <li><strong>PNG</strong> - Export 4K raster image</li>
-            <li><strong>SVG</strong> - Export vector (Stars, Tree, Plotter only)</li>
+            <li><strong>SVG</strong> - Export vector for supported modes</li>
             <li><strong>Clear</strong> - Reset canvas</li>
             <li><strong>Mode buttons</strong> - Switch visualization (clears canvas)</li>
+            <li><strong>+/-/0</strong> - Zoom in/out/reset (keyboard shortcuts)</li>
+            <li><strong>Drag</strong> - Pan around the canvas</li>
+            <li><strong>Double-click</strong> - Reset zoom and pan</li>
           </ul>
         </section>
 
         <section>
           <h2>SVG Export</h2>
-          <p>Three modes support vector export for infinite resolution and pen plotting:</p>
+          <p>Many modes support vector export for infinite resolution and pen plotting:</p>
           <ul>
             <li><strong>Stars</strong> - Circles and lines, great for laser cutting</li>
             <li><strong>Tree</strong> - Branch paths, perfect for nature prints</li>
             <li><strong>Plotter</strong> - Single continuous stroke for AxiDraw</li>
+            <li><strong>Spiro</strong> - Mathematical curves</li>
+            <li><strong>Voronoi</strong> - Cellular tessellation</li>
+            <li><strong>Mycelium</strong> - Organic branching networks</li>
+            <li><strong>Contours</strong> - Topographic lines</li>
+            <li><strong>Glass</strong> - Delaunay mosaic</li>
+            <li><strong>City</strong> - Isometric architecture</li>
+            <li><strong>Cymatics</strong> - Standing wave patterns</li>
           </ul>
           <p>SVGs can be opened in Illustrator, scaled to any size, or sent directly to pen plotters.</p>
         </section>
