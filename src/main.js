@@ -2,19 +2,46 @@ import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
 import { youtubeEmbed } from './youtube/embed.js'
+import { speechInterpreter } from './audio/speech.js'
+import { ASCIIRenderer } from './visual/ascii.js'
 
 class AudioCanvas {
   constructor() {
     this.audioAnalyzer = new AudioAnalyzer()
     this.beatDetector = new BeatDetector()
     this.renderer = null
+    this.asciiRenderer = null
     this.isPlaying = false
     this.isRecording = false
     this.isTabCapturing = false
+    this.isSpeechActive = false
+    this.asciiMode = false
     this.animationId = null
     this.hasVideo = false
 
     this.initUI()
+    this.initASCII()
+    this.initSpeech()
+  }
+
+  initASCII() {
+    const container = document.getElementById('app')
+    this.asciiRenderer = new ASCIIRenderer(container)
+  }
+
+  initSpeech() {
+    // Wire up speech recognition callbacks
+    speechInterpreter.onWord = (wordData) => {
+      if (this.asciiMode) {
+        this.asciiRenderer.addWord(wordData)
+      }
+    }
+
+    speechInterpreter.onCharacter = (charData) => {
+      if (this.asciiMode) {
+        this.asciiRenderer.addCharacter(charData)
+      }
+    }
   }
 
   initUI() {
@@ -83,6 +110,16 @@ class AudioCanvas {
     })
     document.getElementById('video-opacity').addEventListener('input', (e) => {
       youtubeEmbed.setOpacity(e.target.value / 100)
+    })
+
+    // ASCII mode toggle
+    document.getElementById('ascii-toggle')?.addEventListener('change', (e) => {
+      this.toggleASCII(e.target.checked)
+    })
+
+    // Speech/Lyrics toggle
+    document.getElementById('speech-toggle')?.addEventListener('change', (e) => {
+      this.toggleSpeech(e.target.checked)
     })
 
     // Export buttons
@@ -313,18 +350,49 @@ class AudioCanvas {
     }
   }
 
+  toggleASCII(enabled) {
+    this.asciiMode = enabled
+    if (enabled) {
+      this.asciiRenderer.show()
+      document.getElementById('canvas').style.opacity = '0'
+    } else {
+      this.asciiRenderer.hide()
+      document.getElementById('canvas').style.opacity = '1'
+    }
+  }
+
+  toggleSpeech(enabled) {
+    if (enabled) {
+      speechInterpreter.start()
+      this.isSpeechActive = true
+    } else {
+      speechInterpreter.stop()
+      this.isSpeechActive = false
+    }
+  }
+
   animate() {
     if (!this.isPlaying && !this.isRecording && !this.isTabCapturing) return
 
     const audioFeatures = this.audioAnalyzer.getAudioFeatures()
     const beatInfo = this.beatDetector.update(audioFeatures, performance.now())
 
+    // Render canvas mode
     const fps = this.renderer.render(audioFeatures, beatInfo)
+
+    // Render ASCII mode if active
+    if (this.asciiMode) {
+      const speechData = speechInterpreter.getVisualizationData()
+      this.asciiRenderer.update(audioFeatures, speechData)
+      this.asciiRenderer.render()
+    }
 
     // Update info display
     const bpmText = beatInfo.bpm > 0 ? `${beatInfo.bpm.toFixed(0)} BPM` : 'detecting...'
     const satText = beatInfo.isSaturated ? ' | BLAST' : ''
-    this.fpsElement.textContent = `${fps} FPS | ${bpmText}${satText}`
+    const asciiText = this.asciiMode ? ' | ASCII' : ''
+    const speechText = this.isSpeechActive ? ' | LYRICS' : ''
+    this.fpsElement.textContent = `${fps} FPS | ${bpmText}${satText}${asciiText}${speechText}`
 
     this.animationId = requestAnimationFrame(() => this.animate())
   }

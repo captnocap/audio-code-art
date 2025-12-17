@@ -70,6 +70,18 @@
         <input type="checkbox" id="saturation-toggle" checked />
         <span class="toggle-label">Blast Mode</span>
       </label>
+
+      <div class="separator"></div>
+
+      <label class="toggle" title="Switch to ASCII text-based visualization">
+        <input type="checkbox" id="ascii-toggle" />
+        <span class="toggle-label">ASCII</span>
+      </label>
+
+      <label class="toggle" title="Interpret vocals as text data for visualization">
+        <input type="checkbox" id="speech-toggle" />
+        <span class="toggle-label">Lyrics</span>
+      </label>
     </div>
 
     <div id="track-info" class="hidden">
@@ -184,12 +196,35 @@
         </section>
 
         <section>
+          <h2>ASCII Mode</h2>
+          <p>Switches from canvas to text-based visualization. The entire screen becomes a grid of characters that respond to audio:</p>
+          <ul>
+            <li>Character density represents amplitude</li>
+            <li>Wave patterns flow based on bass/mid/high frequencies</li>
+            <li>Colors map to pitch like the canvas modes</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Lyrics Mode</h2>
+          <p>Uses speech recognition to interpret vocals - even when it can't understand them. The neural network's confused attempts at transcribing screams/growls become visual data:</p>
+          <ul>
+            <li>Misheard "words" rain down through the ASCII display</li>
+            <li>Character codes determine colors</li>
+            <li>Confidence scores affect opacity</li>
+            <li>Works best with ASCII mode enabled</li>
+          </ul>
+          <p>The interpretation doesn't need to be correct - garbage text from black metal vocals creates abstract character patterns.</p>
+        </section>
+
+        <section>
           <h2>Tips</h2>
           <ul>
             <li>Let a full song play to build up dense, detailed artwork</li>
             <li>Try different genres - each creates distinct visual signatures</li>
             <li>Export during interesting moments or at the end</li>
             <li>The same song will produce similar (but not identical) results each time</li>
+            <li>Enable ASCII + Lyrics together for text-based vocal visualization</li>
           </ul>
         </section>
 
