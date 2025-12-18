@@ -36,6 +36,7 @@ export { PipesMode } from './pipes.js'
 
 // Meta modes
 export { JSXGenMode } from './jsxgen.js'
+export { AIChatMode } from './aichat.js'
 
 // Interactive modes
 export { BulletHellMode } from './bullethell.js'
@@ -234,6 +235,12 @@ export const MODES = {
     name: 'JSX Generator',
     description: 'Generate React components from audio - songs become design systems',
     icon: '⚛️'
+  },
+  aichat: {
+    class: () => import('./aichat.js').then(m => m.AIChatMode),
+    name: 'AI Chat',
+    description: 'Chat interface where responses become multi-mode visual chaos',
+    icon: '🧠'
   },
 
   // Interactive modes

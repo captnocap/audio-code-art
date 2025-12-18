@@ -28,6 +28,7 @@ import { ElectrochemistryMode } from './modes/electrochemistry.js'
 import { PipesMode } from './modes/pipes.js'
 import { MandelbrotMode } from './modes/mandelbrot.js'
 import { JSXGenMode } from './modes/jsxgen.js'
+import { AIChatMode } from './modes/aichat.js'
 import { BulletHellMode } from './modes/bullethell.js'
 import { TetrisMode } from './modes/tetris.js'
 import { MinesweeperMode } from './modes/minesweeper.js'
@@ -64,6 +65,7 @@ const MODE_CLASSES = {
   pipes: PipesMode,
   mandelbrot: MandelbrotMode,
   jsxgen: JSXGenMode,
+  aichat: AIChatMode,
   bullethell: BulletHellMode,
   tetris: TetrisMode,
   minesweeper: MinesweeperMode,
@@ -132,6 +134,11 @@ export class Renderer {
     if (!MODE_CLASSES[modeName]) {
       console.error(`Unknown mode: ${modeName}`)
       return
+    }
+
+    // Clean up previous mode if it has a destroy method
+    if (this.currentMode && typeof this.currentMode.destroy === 'function') {
+      this.currentMode.destroy()
     }
 
     this.currentModeName = modeName
