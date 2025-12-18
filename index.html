@@ -17,6 +17,7 @@
           <button class="mode-tab active" data-tab="2d">2D</button>
           <button class="mode-tab" data-tab="3d">3D</button>
           <button class="mode-tab" data-tab="games">Games</button>
+          <button class="mode-tab" data-tab="glitch">Glitch</button>
           <button class="mode-tab" data-tab="code">Code</button>
         </div>
 
@@ -64,6 +65,15 @@
             <button class="mode-btn" data-mode="tetris" title="Tetris where pieces are chosen by audio">🧱 Tetris</button>
             <button class="mode-btn" data-mode="minesweeper" title="Beats spawn mines - clear between the chaos">💣 Minesweeper</button>
             <button class="mode-btn" data-mode="audiosurf" title="Ride a highway generated from audio">🏄 Audiosurf</button>
+          </div>
+
+          <div class="mode-panel" data-panel="glitch">
+            <button class="mode-btn" data-mode="corruption" title="Memory artifacts - past audio bleeds into present">💾 Corruption</button>
+            <button class="mode-btn" data-mode="feedback" title="Canvas becomes audio input - recursive chaos">♾️ Feedback</button>
+            <button class="mode-btn" data-mode="wrongapi" title="Audio controls impossible things - errors as art">⚠️ Wrong API</button>
+            <button class="mode-btn" data-mode="timedisplacement" title="Past, present, future rendered out of order">⏳ Time Warp</button>
+            <button class="mode-btn" data-mode="antiviz" title="Sound destroys, silence preserves">🕳️ Anti-Viz</button>
+            <button class="mode-btn" data-mode="synesthesialies" title="Audio becomes smell, taste, texture">👃 Synesthesia</button>
           </div>
 
           <div class="mode-panel" data-panel="code">
@@ -328,6 +338,39 @@
               <p>Chat interface where responses become multi-mode visual chaos. Words trigger different layers.</p>
             </div>
           </div>
+          <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #ff5555;">Glitch Modes (Chaos!)</h3>
+          <div class="mode-grid">
+            <div class="mode-item">
+              <span class="mode-icon">💾</span>
+              <strong>Corruption</strong>
+              <p>Memory artifacts. Audio from 30 seconds ago bleeds into now. Time is broken.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">♾️</span>
+              <strong>Feedback</strong>
+              <p>Canvas becomes audio input. Recursive chaos. Will crash to white or black - the journey is art.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">⚠️</span>
+              <strong>Wrong API</strong>
+              <p>Audio controls impossible things. Bass = z-index of nothing. Errors visualized.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">⏳</span>
+              <strong>Time Warp</strong>
+              <p>Past, present, future rendered out of order. Causality violation as aesthetic.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🕳️</span>
+              <strong>Anti-Viz</strong>
+              <p>Sound destroys. Silence preserves. What remains is the song's negative space.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">👃</span>
+              <strong>Synesthesia</strong>
+              <p>Pitch → smell. Volume → taste. Rhythm → texture. Impossible sensations as words.</p>
+            </div>
+          </div>
           <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #ff4488;">Interactive Modes (Games!)</h3>
           <div class="mode-grid">
             <div class="mode-item">
@@ -393,6 +436,22 @@
             <li><strong>Contour</strong> - Quiet moments turn bullets into safe zones</li>
           </ul>
           <p>Getting hit doesn't end the game - it might distort time, shift colors, invert your controls, or clear bullets. The goal isn't survival - it's grace, timing, and reading the field.</p>
+        </section>
+
+        <section>
+          <h2>Tuner Panel</h2>
+          <p>Click the 🎛️ button (top right) to open the live tuner. Adjust visualization parameters in real-time like an audio producer mixing visuals:</p>
+          <ul>
+            <li><strong>Decay</strong> - Trail persistence (low = instant, high = forever)</li>
+            <li><strong>Sensitivity</strong> - Audio reactivity threshold</li>
+            <li><strong>Feedback</strong> - Self-reference amount (for feedback mode)</li>
+            <li><strong>Time Bleed</strong> - How much past bleeds into present</li>
+            <li><strong>Bass/Mid/High Weight</strong> - Frequency band influence</li>
+            <li><strong>Destruction</strong> - Erosion rate (for anti-viz)</li>
+            <li><strong>Color Drift</strong> - Hue shift over time</li>
+            <li><strong>Chaos</strong> - General randomness factor</li>
+          </ul>
+          <p>Presets: Subtle, Aggressive, Pure Chaos, Temporal, Reset</p>
         </section>
 
         <section>

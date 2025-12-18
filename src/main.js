@@ -8,6 +8,7 @@ import { speechInterpreter } from './audio/speech.js'
 import { ASCIIRenderer } from './visual/ascii.js'
 import { PanZoom } from './visual/panzoom.js'
 import { gifExporter } from './export/gif.js'
+import { tuner } from './visual/tuner.js'
 
 class AudioCanvas {
   constructor() {

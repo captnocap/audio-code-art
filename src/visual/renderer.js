@@ -29,6 +29,12 @@ import { PipesMode } from './modes/pipes.js'
 import { MandelbrotMode } from './modes/mandelbrot.js'
 import { JSXGenMode } from './modes/jsxgen.js'
 import { AIChatMode } from './modes/aichat.js'
+import { CorruptionMode } from './modes/corruption.js'
+import { FeedbackMode } from './modes/feedback.js'
+import { WrongAPIMode } from './modes/wrongapi.js'
+import { TimeDisplacementMode } from './modes/timedisplacement.js'
+import { AntiVizMode } from './modes/antiviz.js'
+import { SynesthesiaLiesMode } from './modes/synesthesialies.js'
 import { BulletHellMode } from './modes/bullethell.js'
 import { TetrisMode } from './modes/tetris.js'
 import { MinesweeperMode } from './modes/minesweeper.js'
@@ -66,6 +72,12 @@ const MODE_CLASSES = {
   mandelbrot: MandelbrotMode,
   jsxgen: JSXGenMode,
   aichat: AIChatMode,
+  corruption: CorruptionMode,
+  feedback: FeedbackMode,
+  wrongapi: WrongAPIMode,
+  timedisplacement: TimeDisplacementMode,
+  antiviz: AntiVizMode,
+  synesthesialies: SynesthesiaLiesMode,
   bullethell: BulletHellMode,
   tetris: TetrisMode,
   minesweeper: MinesweeperMode,

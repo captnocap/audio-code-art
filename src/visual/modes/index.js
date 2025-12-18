@@ -38,6 +38,14 @@ export { PipesMode } from './pipes.js'
 export { JSXGenMode } from './jsxgen.js'
 export { AIChatMode } from './aichat.js'
 
+// Glitch modes
+export { CorruptionMode } from './corruption.js'
+export { FeedbackMode } from './feedback.js'
+export { WrongAPIMode } from './wrongapi.js'
+export { TimeDisplacementMode } from './timedisplacement.js'
+export { AntiVizMode } from './antiviz.js'
+export { SynesthesiaLiesMode } from './synesthesialies.js'
+
 // Interactive modes
 export { BulletHellMode } from './bullethell.js'
 export { TetrisMode } from './tetris.js'
@@ -241,6 +249,44 @@ export const MODES = {
     name: 'AI Chat',
     description: 'Chat interface where responses become multi-mode visual chaos',
     icon: '🧠'
+  },
+
+  // Glitch modes
+  corruption: {
+    class: () => import('./corruption.js').then(m => m.CorruptionMode),
+    name: 'Corruption',
+    description: 'Memory artifacts. Audio from 30 seconds ago bleeds into now.',
+    icon: '💾'
+  },
+  feedback: {
+    class: () => import('./feedback.js').then(m => m.FeedbackMode),
+    name: 'Feedback Loop',
+    description: 'Canvas becomes audio input. Recursive chaos until crash.',
+    icon: '♾️'
+  },
+  wrongapi: {
+    class: () => import('./wrongapi.js').then(m => m.WrongAPIMode),
+    name: 'Wrong API',
+    description: 'Audio controls impossible things. Errors become art.',
+    icon: '⚠️'
+  },
+  timedisplacement: {
+    class: () => import('./timedisplacement.js').then(m => m.TimeDisplacementMode),
+    name: 'Time Displacement',
+    description: 'Past, present, future rendered out of order.',
+    icon: '⏳'
+  },
+  antiviz: {
+    class: () => import('./antiviz.js').then(m => m.AntiVizMode),
+    name: 'Anti-Visualization',
+    description: 'Sound destroys. Silence preserves. Negative space portrait.',
+    icon: '🕳️'
+  },
+  synesthesialies: {
+    class: () => import('./synesthesialies.js').then(m => m.SynesthesiaLiesMode),
+    name: 'Synesthesia Lies',
+    description: 'Audio becomes smell, taste, texture. Impossible sensations.',
+    icon: '👃'
   },
 
   // Interactive modes

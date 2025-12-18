@@ -46,7 +46,6 @@ export class ProteinMode extends Visualization3DMode {
     // Create visual elements
     this.createAminoAcids(scene)
     this.createBackbone(scene)
-    this.createSecondaryStructures()
 
     // Lighting for protein visualization
     const ambient = new THREE.AmbientLight(0x404040, 0.5)
