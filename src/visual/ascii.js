@@ -48,9 +48,10 @@ export class ASCIIRenderer {
       background: #0a0a0a;
       color: #fff;
       overflow: hidden;
-      z-index: 5;
+      z-index: 10;
       white-space: pre;
       display: none;
+      pointer-events: none;
     `
     this.container.appendChild(this.element)
 
@@ -190,11 +191,12 @@ export class ASCIIRenderer {
       }
     }
 
-    // Base animated pattern (always visible, even without audio)
-    const baseAmplitude = Math.max(amplitude, 0.1) // minimum visibility
-    const bassBoosted = bass + 0.1
-    const midBoosted = mid + 0.1
-    const highBoosted = high + 0.1
+    // Base animated pattern - ALWAYS visible, even without audio
+    // Use higher base values so animation is visible immediately
+    const baseAmplitude = Math.max(amplitude, 0.4) // Higher minimum for visibility
+    const bassBoosted = bass + 0.3
+    const midBoosted = mid + 0.3
+    const highBoosted = high + 0.3
 
     // Audio-reactive background waves
     for (let y = 0; y < this.rows; y++) {
@@ -204,12 +206,14 @@ export class ASCIIRenderer {
                      Math.cos(y * 0.1 + now * 0.003) * midBoosted +
                      Math.sin((x + y) * 0.05 + now * 0.001) * highBoosted
 
-        const value = (wave + 1) * 0.3 * baseAmplitude
+        // Scale value to ensure visibility without audio
+        const value = (wave + 1.5) * 0.4 * baseAmplitude
 
-        if (value > 0.05) {
-          this.grid[y][x] = this.valueToChar(value)
-          const rgb = pitchTempoToRGB(centroid, 0.5, value)
-          this.colorGrid[y][x] = { ...rgb, a: value * 0.5 }
+        // Lower threshold so pattern is visible
+        if (value > 0.02) {
+          this.grid[y][x] = this.valueToChar(Math.min(value, 1))
+          const rgb = pitchTempoToRGB(centroid, 0.5, Math.min(value, 1))
+          this.colorGrid[y][x] = { ...rgb, a: Math.min(value * 0.8, 1) }
         }
       }
     }

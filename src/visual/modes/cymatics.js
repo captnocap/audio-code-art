@@ -23,7 +23,7 @@ export class CymaticsMode extends VisualizationMode {
     this.description = 'Chladni plate standing wave patterns'
 
     this.particles = []
-    this.maxParticles = 8000
+    this.maxParticles = 12000  // More particles for denser patterns
 
     // Chladni pattern parameters
     // Pattern determined by integers n and m in the equation
@@ -61,8 +61,8 @@ export class CymaticsMode extends VisualizationMode {
     // Initialize accumulation buffer
     this.accumulation = new Float32Array(this.width * this.height)
 
-    // Spawn initial particles uniformly
-    this.spawnParticles(this.maxParticles * 0.5)
+    // Spawn MORE initial particles for faster pattern formation
+    this.spawnParticles(this.maxParticles * 0.8)
   }
 
   spawnParticles(count) {
@@ -161,9 +161,9 @@ export class CymaticsMode extends VisualizationMode {
       }
     }
 
-    // Update particles
-    const settleDist = 0.02 // Distance from nodal line to consider settled
-    const attractionStrength = 0.3 + this.smoothBass * 0.5
+    // Update particles - FASTER settling
+    const settleDist = 0.08 // More lenient distance from nodal line to consider settled
+    const attractionStrength = 0.8 + this.smoothBass * 1.0 // Much stronger attraction
 
     for (const p of this.particles) {
       // Get distance from center
@@ -195,22 +195,22 @@ export class CymaticsMode extends VisualizationMode {
         p.vx += (Math.random() - 0.5) * vibration
         p.vy += (Math.random() - 0.5) * vibration
 
-        // Damping
-        p.vx *= 0.95
-        p.vy *= 0.95
+        // Damping - faster so particles settle quicker
+        p.vx *= 0.88
+        p.vy *= 0.88
 
         // Update position
         p.x += p.vx
         p.y += p.vy
 
-        // Check if settled on nodal line
-        if (patternValue < settleDist && Math.abs(p.vx) < 0.5 && Math.abs(p.vy) < 0.5) {
+        // Check if settled on nodal line - FASTER settling
+        if (patternValue < settleDist && Math.abs(p.vx) < 1.0 && Math.abs(p.vy) < 1.0) {
           p.settleTime++
-          if (p.settleTime > 30) {
+          if (p.settleTime > 10) { // Settle in 10 frames instead of 30
             p.settled = true
           }
         } else {
-          p.settleTime = 0
+          p.settleTime = Math.max(0, p.settleTime - 1) // Slower reset
         }
       } else {
         // Settled particles still vibrate slightly

@@ -39,12 +39,13 @@ export class AudiosurfMode extends VisualizationMode {
     this.maxCombo = 0
     this.collected = 0
 
-    // Visual
+    // Visual - adjusted for better visibility
     this.speed = 5
     this.baseSpeed = 5
     this.cameraHeight = 150
     this.cameraDistance = 300
-    this.horizonY = this.height * 0.35
+    this.horizonY = this.height * 0.30 // Higher horizon for more track visibility
+    this.playerY = 0 // Will be set based on height
 
     // Audio smoothing
     this.smoothBass = 0
@@ -97,6 +98,11 @@ export class AudiosurfMode extends VisualizationMode {
     this.player.targetLane = 1
     this.player.trail = []
 
+    // Set player Y position higher to avoid being hidden by UI
+    // Top 120px is reserved for controls
+    this.playerY = this.height - 180 // Much higher than before (was height - 100)
+    this.horizonY = this.height * 0.28 // Adjust horizon too
+
     // Initialize track
     for (let i = 0; i < this.maxSegments; i++) {
       this.trackSegments.push({
@@ -142,8 +148,8 @@ export class AudiosurfMode extends VisualizationMode {
     const centerX = this.width / 2
     this.player.x = centerX + (this.player.lane - 1) * this.laneWidth * 0.8
 
-    // Update player trail
-    this.player.trail.push({ x: this.player.x, y: this.height - 100 })
+    // Update player trail - use dynamic playerY
+    this.player.trail.push({ x: this.player.x, y: this.playerY })
     if (this.player.trail.length > 20) {
       this.player.trail.shift()
     }
@@ -275,10 +281,10 @@ export class AudiosurfMode extends VisualizationMode {
     points *= (1 + this.combo * 0.1)
     this.score += Math.floor(points)
 
-    // Spawn particles
+    // Spawn particles - use dynamic playerY
     const centerX = this.width / 2
     const orbX = centerX + (orb.lane - 1) * this.laneWidth * 0.8
-    const orbY = this.height - 120
+    const orbY = this.playerY - 20
 
     for (let i = 0; i < 15; i++) {
       this.particles.push({
@@ -454,7 +460,8 @@ export class AudiosurfMode extends VisualizationMode {
       const laneOffset = (orb.lane - 1) * this.laneWidth * 0.8
       const x = centerX + laneOffset * proj.scale
       const y = proj.y - 20 * proj.scale
-      const size = 15 * proj.scale * orb.scale
+      // BIGGER orbs for better visibility
+      const size = 20 * proj.scale * orb.scale
 
       // Glow
       const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, size * 2)
@@ -490,7 +497,7 @@ export class AudiosurfMode extends VisualizationMode {
 
   drawPlayer() {
     const x = this.player.x
-    const y = this.height - 100
+    const y = this.playerY
 
     // Trail
     this.ctx.beginPath()

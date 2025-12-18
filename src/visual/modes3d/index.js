@@ -4,9 +4,11 @@ import { NebulaMode } from './nebula.js'
 import { TunnelMode } from './tunnel.js'
 import { ProteinMode } from './protein.js'
 import { DemolitionMode } from './demolition.js'
+import { SoftBodyMode } from './softbody.js'
+import { DimensionalMode } from './dimensional.js'
 
 // Re-export classes
-export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode }
+export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode }
 
 export const MODES_3D = {
   geometry3d: {
@@ -38,6 +40,18 @@ export const MODES_3D = {
     name: 'Audio Demolition',
     description: 'Physics structures destroyed by audio. Bass shakes. Beats explode.',
     icon: '💥'
+  },
+  softbody3d: {
+    class: SoftBodyMode,
+    name: 'Soft Body Mosh',
+    description: 'Jelly blobs colliding. Bass squishes. Beats bounce.',
+    icon: '🫧'
+  },
+  dimensional3d: {
+    class: DimensionalMode,
+    name: 'Dimensional Bleed',
+    description: '2D bleeds into 3D. Portals tear open. Physics breaks.',
+    icon: '🌀'
   }
 }
 

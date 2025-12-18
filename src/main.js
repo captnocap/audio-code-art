@@ -2,7 +2,8 @@ import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
 import { Renderer3D } from './visual/renderer3d.js'
-import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode } from './visual/modes3d/index.js'
+import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode } from './visual/modes3d/index.js'
+import { MODES_PHYSICS, RagdollMode, PinballMode, ChainMode } from './visual/modesPhysics/index.js'
 import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
 import { ASCIIRenderer } from './visual/ascii.js'
@@ -57,7 +58,16 @@ class AudioCanvas {
       nebula3d: NebulaMode,
       tunnel3d: TunnelMode,
       protein3d: ProteinMode,
-      demolition3d: DemolitionMode
+      demolition3d: DemolitionMode,
+      softbody3d: SoftBodyMode,
+      dimensional3d: DimensionalMode
+    }
+
+    // 2D Physics mode classes
+    this.modePhysicsClasses = {
+      ragdoll: RagdollMode,
+      pinball: PinballMode,
+      chains: ChainMode
     }
   }
 
@@ -213,12 +223,28 @@ class AudioCanvas {
       this.toggleSpeech(e.target.checked)
     })
 
+    // Fullscreen toggle
+    document.getElementById('fullscreen-toggle')?.addEventListener('change', (e) => {
+      this.toggleFullscreen(e.target.checked)
+    })
+
+    // Listen for fullscreen changes (user pressing Escape, etc.)
+    document.addEventListener('fullscreenchange', () => {
+      const isFullscreen = !!document.fullscreenElement
+      document.getElementById('fullscreen-toggle').checked = isFullscreen
+    })
+
+    // Hide UI button
+    document.getElementById('hide-ui-btn')?.addEventListener('click', () => {
+      this.toggleUIVisibility()
+    })
+
     // Zoom controls
     document.getElementById('zoom-in')?.addEventListener('click', () => this.panZoom?.zoomIn())
     document.getElementById('zoom-out')?.addEventListener('click', () => this.panZoom?.zoomOut())
     document.getElementById('zoom-reset')?.addEventListener('click', () => this.panZoom?.reset())
 
-    // Keyboard shortcuts for zoom
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return // Don't trigger when typing
 
@@ -228,6 +254,12 @@ class AudioCanvas {
         this.panZoom?.zoomOut()
       } else if (e.key === '0') {
         this.panZoom?.reset()
+      } else if (e.key === 'f' || e.key === 'F') {
+        const toggle = document.getElementById('fullscreen-toggle')
+        toggle.checked = !toggle.checked
+        this.toggleFullscreen(toggle.checked)
+      } else if (e.key === 'h' || e.key === 'H') {
+        this.toggleUIVisibility()
       }
     })
 
@@ -490,6 +522,25 @@ class AudioCanvas {
       speechInterpreter.stop()
       this.isSpeechActive = false
     }
+  }
+
+  toggleFullscreen(enabled) {
+    if (enabled) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.warn('Fullscreen request failed:', err)
+        document.getElementById('fullscreen-toggle').checked = false
+      })
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(err => {
+          console.warn('Exit fullscreen failed:', err)
+        })
+      }
+    }
+  }
+
+  toggleUIVisibility() {
+    document.body.classList.toggle('ui-hidden')
   }
 
   animate() {

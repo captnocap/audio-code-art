@@ -52,6 +52,9 @@ export { TetrisMode } from './tetris.js'
 export { MinesweeperMode } from './minesweeper.js'
 export { AudiosurfMode } from './audiosurf.js'
 
+// Experimental physics modes
+export { QuantumGravityMode } from './quantumgravity.js'
+
 // Registry of all available modes
 export const MODES = {
   flowParticles: {
@@ -313,6 +316,14 @@ export const MODES = {
     name: 'Audiosurf',
     description: 'Ride a highway generated from audio. Collect orbs, feel the flow.',
     icon: '🏄'
+  },
+
+  // Experimental physics
+  quantumgravity: {
+    class: () => import('./quantumgravity.js').then(m => m.QuantumGravityMode),
+    name: 'Quantum Gravity',
+    description: 'Sound IS gravity. Bass warps spacetime. Beats collapse wave functions. The unified theory of audio.',
+    icon: '🌌'
   }
 }
 

@@ -112,6 +112,19 @@ export class MinesweeperMode extends VisualizationMode {
   }
 
   init() {
+    // Re-setup input handlers if they were destroyed
+    if (!this.clickHandler) {
+      this.setupInput()
+    }
+
+    // Recalculate cell size in case window resized
+    this.cellSize = Math.min(
+      Math.floor((this.height * 0.75) / this.rows),
+      Math.floor((this.width * 0.7) / this.cols)
+    )
+    this.gridX = (this.width - this.cols * this.cellSize) / 2
+    this.gridY = (this.height - this.rows * this.cellSize) / 2
+
     // Initialize empty grid (mines added by audio)
     this.grid = Array(this.rows).fill(null).map(() => Array(this.cols).fill(0))
     this.revealed = Array(this.rows).fill(null).map(() => Array(this.cols).fill(false))
@@ -513,9 +526,23 @@ export class MinesweeperMode extends VisualizationMode {
     this.init()
   }
 
+  // Renderer calls destroy() not dispose()
+  destroy() {
+    if (this.clickHandler) {
+      this.ctx.canvas.removeEventListener('mousedown', this.clickHandler)
+    }
+    if (this.rightClickHandler) {
+      this.ctx.canvas.removeEventListener('contextmenu', this.rightClickHandler)
+    }
+    if (this.moveHandler) {
+      this.ctx.canvas.removeEventListener('mousemove', this.moveHandler)
+    }
+    this.clickHandler = null
+    this.rightClickHandler = null
+    this.moveHandler = null
+  }
+
   dispose() {
-    this.ctx.canvas.removeEventListener('mousedown', this.clickHandler)
-    this.ctx.canvas.removeEventListener('contextmenu', this.rightClickHandler)
-    this.ctx.canvas.removeEventListener('mousemove', this.moveHandler)
+    this.destroy()
   }
 }

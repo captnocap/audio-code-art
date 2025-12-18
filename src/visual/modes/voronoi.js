@@ -49,7 +49,7 @@ export class VoronoiMode extends VisualizationMode {
     this.description = 'Cellular patterns that fracture on beats'
 
     this.sites = []
-    this.numSites = 80
+    this.numSites = 60 // Fewer but larger cells look better
 
     // Smoothed audio
     this.smoothBass = 0
@@ -231,7 +231,8 @@ export class VoronoiMode extends VisualizationMode {
     const data = imageData.data
 
     // For each pixel, find nearest site
-    const step = 2 // Skip pixels for performance
+    // Use step=1 for full quality (was 2)
+    const step = 1
     for (let y = 0; y < this.height; y += step) {
       for (let x = 0; x < this.width; x += step) {
         let minDist = Infinity
@@ -265,40 +266,50 @@ export class VoronoiMode extends VisualizationMode {
   }
 
   drawEdges(ctx) {
-    // Draw edges by finding cell boundaries
-    // Simplified: draw lines between neighboring sites
-    ctx.strokeStyle = 'rgba(10, 10, 10, 0.8)'
+    // Draw cell boundaries by detecting color changes
+    // Much cleaner than perpendicular bisectors
+    const imageData = ctx.getImageData(0, 0, this.width, this.height)
+    const data = imageData.data
+
+    ctx.strokeStyle = 'rgba(20, 20, 30, 0.9)'
     ctx.lineWidth = 2
+    ctx.beginPath()
 
-    // For each pair of sites, draw perpendicular bisector
-    // This creates the Voronoi edges
-    for (let i = 0; i < this.sites.length; i++) {
-      for (let j = i + 1; j < this.sites.length; j++) {
-        const s1 = this.sites[i]
-        const s2 = this.sites[j]
+    // Scan for edges (where adjacent pixels have different colors)
+    for (let y = 1; y < this.height - 1; y += 2) {
+      for (let x = 1; x < this.width - 1; x += 2) {
+        const idx = (y * this.width + x) * 4
+        const r = data[idx]
+        const g = data[idx + 1]
+        const b = data[idx + 2]
 
-        const dx = s2.x - s1.x
-        const dy = s2.y - s1.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
+        // Check right neighbor
+        const rightIdx = (y * this.width + x + 1) * 4
+        const rightR = data[rightIdx]
+        const rightG = data[rightIdx + 1]
+        const rightB = data[rightIdx + 2]
 
-        // Only draw if sites are close enough
-        if (dist < 200) {
-          const midX = (s1.x + s2.x) / 2
-          const midY = (s1.y + s2.y) / 2
+        // Check bottom neighbor
+        const bottomIdx = ((y + 1) * this.width + x) * 4
+        const bottomR = data[bottomIdx]
+        const bottomG = data[bottomIdx + 1]
+        const bottomB = data[bottomIdx + 2]
 
-          // Perpendicular direction
-          const px = -dy / dist
-          const py = dx / dist
+        // If color differs significantly, it's an edge
+        const diffRight = Math.abs(r - rightR) + Math.abs(g - rightG) + Math.abs(b - rightB)
+        const diffBottom = Math.abs(r - bottomR) + Math.abs(g - bottomG) + Math.abs(b - bottomB)
 
-          // Draw perpendicular line segment
-          const len = 100
-          ctx.beginPath()
-          ctx.moveTo(midX - px * len, midY - py * len)
-          ctx.lineTo(midX + px * len, midY + py * len)
-          ctx.stroke()
+        if (diffRight > 30) {
+          ctx.moveTo(x + 0.5, y - 1)
+          ctx.lineTo(x + 0.5, y + 2)
+        }
+        if (diffBottom > 30) {
+          ctx.moveTo(x - 1, y + 0.5)
+          ctx.lineTo(x + 2, y + 0.5)
         }
       }
     }
+    ctx.stroke()
   }
 
   clear() {

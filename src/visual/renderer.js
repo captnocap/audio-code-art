@@ -39,6 +39,10 @@ import { BulletHellMode } from './modes/bullethell.js'
 import { TetrisMode } from './modes/tetris.js'
 import { MinesweeperMode } from './modes/minesweeper.js'
 import { AudiosurfMode } from './modes/audiosurf.js'
+import { QuantumGravityMode } from './modes/quantumgravity.js'
+import { RagdollMode } from './modesPhysics/ragdoll.js'
+import { PinballMode } from './modesPhysics/pinball.js'
+import { ChainMode } from './modesPhysics/chains.js'
 import { svgExporter } from '../export/svg.js'
 
 const MODE_CLASSES = {
@@ -81,7 +85,11 @@ const MODE_CLASSES = {
   bullethell: BulletHellMode,
   tetris: TetrisMode,
   minesweeper: MinesweeperMode,
-  audiosurf: AudiosurfMode
+  audiosurf: AudiosurfMode,
+  quantumgravity: QuantumGravityMode,
+  ragdoll: RagdollMode,
+  pinball: PinballMode,
+  chains: ChainMode
 }
 
 export class Renderer {

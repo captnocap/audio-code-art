@@ -195,7 +195,7 @@ export class AntiVizMode extends VisualizationMode {
   erodeFromCenter(strength, params) {
     const cx = this.width / 2
     const cy = this.height / 2
-    const count = Math.floor(strength * 50)
+    const count = Math.floor(strength * 150) // 3x more erosion points
 
     for (let i = 0; i < count; i++) {
       // Radial distribution from center
@@ -220,7 +220,7 @@ export class AntiVizMode extends VisualizationMode {
   }
 
   erodeEdges(strength, params) {
-    const count = Math.floor(strength * 40)
+    const count = Math.floor(strength * 120) // 3x more erosion points
 
     for (let i = 0; i < count; i++) {
       // Pick random edge
@@ -252,7 +252,7 @@ export class AntiVizMode extends VisualizationMode {
 
   dissolveMidtones(strength, params) {
     // Target pixels with mid-range brightness
-    const count = Math.floor(strength * 30)
+    const count = Math.floor(strength * 100) // 3x more erosion points
     const imageData = this.ctx.getImageData(0, 0, this.width, this.height)
     const data = imageData.data
 
@@ -274,9 +274,9 @@ export class AntiVizMode extends VisualizationMode {
     // Random burst location
     const bx = Math.random() * this.width
     const by = Math.random() * this.height
-    const radius = 30 + intensity * 100
+    const radius = 50 + intensity * 150 // Bigger bursts
 
-    const points = Math.floor(intensity * 100)
+    const points = Math.floor(intensity * 300) // 3x more points
     for (let i = 0; i < points; i++) {
       const angle = Math.random() * Math.PI * 2
       const dist = Math.random() * radius
@@ -307,20 +307,27 @@ export class AntiVizMode extends VisualizationMode {
     const currentDestruction = this.destructionMap[idx]
 
     if (currentDestruction < 1) {
-      // Increase destruction at this point
-      const increase = strength * 0.1 * params.destruction
+      // Increase destruction at this point - 10x FASTER than before!
+      // Default params.destruction is 0.5, so this gives noticeable erosion
+      const increase = strength * 1.0 * (params.destruction + 0.5) // Much higher base + tuner param
       this.destructionMap[idx] = Math.min(1, currentDestruction + increase)
 
       if (this.destructionMap[idx] >= 1 && currentDestruction < 1) {
         this.pixelsDestroyed++
       }
 
-      // Also affect neighbors (blur erosion)
-      const neighborStrength = increase * 0.3
+      // Also affect neighbors (blur erosion) - larger spread
+      const neighborStrength = increase * 0.5
       if (x > 0) this.destructionMap[idx - 1] = Math.min(1, this.destructionMap[idx - 1] + neighborStrength)
       if (x < this.width - 1) this.destructionMap[idx + 1] = Math.min(1, this.destructionMap[idx + 1] + neighborStrength)
       if (y > 0) this.destructionMap[idx - this.width] = Math.min(1, this.destructionMap[idx - this.width] + neighborStrength)
       if (y < this.height - 1) this.destructionMap[idx + this.width] = Math.min(1, this.destructionMap[idx + this.width] + neighborStrength)
+
+      // Diagonal neighbors too
+      if (x > 0 && y > 0) this.destructionMap[idx - this.width - 1] = Math.min(1, this.destructionMap[idx - this.width - 1] + neighborStrength * 0.5)
+      if (x < this.width - 1 && y > 0) this.destructionMap[idx - this.width + 1] = Math.min(1, this.destructionMap[idx - this.width + 1] + neighborStrength * 0.5)
+      if (x > 0 && y < this.height - 1) this.destructionMap[idx + this.width - 1] = Math.min(1, this.destructionMap[idx + this.width - 1] + neighborStrength * 0.5)
+      if (x < this.width - 1 && y < this.height - 1) this.destructionMap[idx + this.width + 1] = Math.min(1, this.destructionMap[idx + this.width + 1] + neighborStrength * 0.5)
     }
   }
 

@@ -60,8 +60,25 @@ export class ReactionDiffusionMode extends VisualizationMode {
     this.gridA.fill(1)
     this.gridB.fill(0)
 
-    // Seed some initial B in the center
-    this.seedPattern(this.gridWidth / 2, this.gridHeight / 2, 20)
+    // Seed MANY initial patterns with noise for interesting evolution
+    // Central cluster
+    this.seedPattern(this.gridWidth / 2, this.gridHeight / 2, 25)
+
+    // Ring of seeds around center
+    const ringRadius = Math.min(this.gridWidth, this.gridHeight) * 0.25
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2
+      const x = this.gridWidth / 2 + Math.cos(angle) * ringRadius
+      const y = this.gridHeight / 2 + Math.sin(angle) * ringRadius
+      this.seedRandom(x, y, 15)
+    }
+
+    // Scattered random seeds
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * this.gridWidth
+      const y = Math.random() * this.gridHeight
+      this.seedRandom(x, y, 8)
+    }
 
     // Create ImageData for rendering
     this.imageData = this.ctx.createImageData(this.width, this.height)
@@ -183,15 +200,17 @@ export class ReactionDiffusionMode extends VisualizationMode {
 
     // Modulate feed/kill rates based on audio
     // Different parameter combinations create different patterns:
-    // Low feed, low kill = coral/worm-like
-    // High feed, high kill = spots
-    // Medium feed, medium kill = labyrinth
+    // f=0.055, k=0.062 = mitosis (good starting point)
+    // f=0.0367, k=0.0649 = worms
+    // f=0.0545, k=0.062 = coral
+    // f=0.025, k=0.06 = mazes
 
     // Bass influences feed rate (more bass = more growth)
-    this.targetFeed = 0.035 + this.smoothBass * 0.04
+    // Use narrower range around interesting patterns
+    this.targetFeed = 0.03 + this.smoothBass * 0.03
 
     // Mid influences kill rate
-    this.targetKill = 0.055 + this.smoothMid * 0.02
+    this.targetKill = 0.058 + this.smoothMid * 0.012
 
     // Smooth transition of parameters
     this.feed += (this.targetFeed - this.feed) * 0.05
@@ -222,8 +241,8 @@ export class ReactionDiffusionMode extends VisualizationMode {
       this.seedPattern(x, y, 10)
     }
 
-    // Adjust simulation speed based on tempo
-    this.stepsPerFrame = Math.floor(2 + normalizedTempo * 6)
+    // Adjust simulation speed based on tempo - RUN MORE STEPS for faster evolution
+    this.stepsPerFrame = Math.floor(8 + normalizedTempo * 12)
 
     // Run simulation steps
     for (let i = 0; i < this.stepsPerFrame; i++) {

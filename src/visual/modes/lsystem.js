@@ -21,18 +21,35 @@ export class LSystemMode extends VisualizationMode {
     this.activeTips = []
     this.baseLength = Math.min(this.width, this.height) * 0.15
 
-    // Start with a few root points
+    // Start with a few root points AND draw initial trunks
     const rootCount = 3
     for (let i = 0; i < rootCount; i++) {
       const x = this.width * (0.2 + i * 0.3)
       const y = this.height * 0.9
 
-      this.activeTips.push({
-        x,
-        y,
-        angle: -Math.PI / 2,  // Point upward
+      // Draw initial trunk immediately so something is visible
+      const trunkLength = this.baseLength * 0.8
+      const endY = y - trunkLength
+
+      // Initial trunk branch
+      this.branches.push({
+        x1: x,
+        y1: y,
+        x2: x,
+        y2: endY,
+        thickness: 10,
+        rgb: { r: 60, g: 80, b: 60 },
+        color: 'rgb(60, 80, 60)',
         depth: 0,
-        length: this.baseLength,
+        birth: Date.now()
+      })
+
+      this.activeTips.push({
+        x: x,
+        y: endY,
+        angle: -Math.PI / 2,  // Point upward
+        depth: 1,
+        length: this.baseLength * 0.7,
         thickness: 8
       })
     }
@@ -48,8 +65,9 @@ export class LSystemMode extends VisualizationMode {
     const { onBeat, beatIntensity, normalizedTempo, isSaturated } = beatInfo
 
     // Grow much more aggressively - always grow if there's any audio
-    const baseGrowthChance = 0.8  // 80% chance each frame
-    const shouldGrow = amplitude > 0.05 && Math.random() < baseGrowthChance
+    // Lower threshold to 0.01 so even quiet audio triggers growth
+    const baseGrowthChance = 0.9  // 90% chance each frame
+    const shouldGrow = amplitude > 0.01 && Math.random() < baseGrowthChance
 
     // Grow branches from active tips
     if (shouldGrow && this.activeTips.length > 0) {

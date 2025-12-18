@@ -121,6 +121,11 @@ body {
   color: #ff8888;
 }
 
+.mode-tab[data-tab="physics"].active {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffbb55;
+}
+
 #mode-panels {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -430,6 +435,58 @@ button.tab-capturing {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Hide UI button */
+#hide-ui-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#hide-ui-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* Hidden UI state */
+.ui-hidden #controls,
+.ui-hidden #info,
+.ui-hidden #track-info,
+.ui-hidden #help-btn,
+.ui-hidden #tuner-panel {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Show UI hint when hidden */
+.ui-hidden::after {
+  content: 'Press H to show UI';
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  border-radius: 4px;
+  opacity: 0;
+  animation: fadeHint 3s forwards;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes fadeHint {
+  0%, 50% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* Canvas wrapper for pan/zoom */

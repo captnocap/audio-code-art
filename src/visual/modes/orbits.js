@@ -13,7 +13,7 @@ class Particle {
     this.color = color
     this.rgb = rgb
     this.trail = []
-    this.maxTrail = 30
+    this.maxTrail = 60 // Longer trails
     this.life = 1
     this.age = 0
   }
@@ -71,7 +71,7 @@ class Particle {
     this.y += this.vy * dt
 
     this.age++
-    this.life = Math.max(0, 1 - this.age / 1000)
+    this.life = Math.max(0, 1 - this.age / 2000) // Twice as long lifespan
   }
 }
 
@@ -100,7 +100,7 @@ export class OrbitsMode extends VisualizationMode {
 
     this.particles = []
     this.attractors = []
-    this.maxParticles = 500
+    this.maxParticles = 800 // More particles for fuller effect
 
     // Smoothed audio
     this.smoothBass = 0
@@ -114,8 +114,8 @@ export class OrbitsMode extends VisualizationMode {
     // Create initial attractors
     this.createAttractors()
 
-    // Spawn initial particles
-    for (let i = 0; i < 100; i++) {
+    // Spawn initial particles - more of them
+    for (let i = 0; i < 200; i++) {
       this.spawnParticle(0.5, 0.5, 1)
     }
   }
@@ -123,21 +123,21 @@ export class OrbitsMode extends VisualizationMode {
   createAttractors() {
     this.attractors = []
 
-    // Central attractor
+    // Central attractor - MUCH stronger
     this.attractors.push(new Attractor(
       this.width / 2,
       this.height / 2,
-      500
+      800
     ))
 
-    // Orbiting attractors
-    const orbitRadius = Math.min(this.width, this.height) * 0.25
-    for (let i = 0; i < 3; i++) {
-      const angle = (i / 3) * Math.PI * 2
+    // Orbiting attractors - more of them with varied masses
+    const orbitRadius = Math.min(this.width, this.height) * 0.28
+    for (let i = 0; i < 5; i++) { // 5 instead of 3
+      const angle = (i / 5) * Math.PI * 2
       this.attractors.push(new Attractor(
         this.width / 2 + Math.cos(angle) * orbitRadius,
         this.height / 2 + Math.sin(angle) * orbitRadius,
-        200
+        150 + Math.random() * 200 // Varied masses
       ))
     }
   }
@@ -178,9 +178,9 @@ export class OrbitsMode extends VisualizationMode {
     this.smoothMid += (mid - this.smoothMid) * smoothing
     this.smoothHigh += (high - this.smoothHigh) * smoothing
 
-    // Modulate central attractor mass with bass
+    // Modulate central attractor mass with bass - more dramatic range
     if (this.attractors[0]) {
-      this.attractors[0].mass = 300 + this.smoothBass * 700
+      this.attractors[0].mass = 400 + this.smoothBass * 1200
     }
 
     // Move orbital attractors based on mid frequencies

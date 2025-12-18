@@ -16,6 +16,7 @@
         <div id="mode-tabs">
           <button class="mode-tab active" data-tab="2d">2D</button>
           <button class="mode-tab" data-tab="3d">3D</button>
+          <button class="mode-tab" data-tab="physics">Physics</button>
           <button class="mode-tab" data-tab="games">Games</button>
           <button class="mode-tab" data-tab="glitch">Glitch</button>
           <button class="mode-tab" data-tab="code">Code</button>
@@ -59,6 +60,14 @@
             <button class="mode-btn" data-mode="tunnel3d" title="Infinite tunnel flying through audio-reactive space">🕳️ Tunnel</button>
             <button class="mode-btn" data-mode="protein3d" title="Amino acid chains folding and unfolding with audio">🧬 Protein</button>
             <button class="mode-btn" data-mode="demolition3d" title="Physics structures destroyed by audio - bass shakes, beats explode">💥 Demolition</button>
+            <button class="mode-btn" data-mode="softbody3d" title="Jelly blobs colliding and squishing to audio">🫧 Soft Body</button>
+            <button class="mode-btn" data-mode="dimensional3d" title="2D plane in 3D space - portals tear between dimensions">🌀 Dimensional</button>
+          </div>
+
+          <div class="mode-panel" data-panel="physics">
+            <button class="mode-btn" data-mode="ragdoll" title="Ragdoll mosh pit - bass makes them heavy, beats make them jump">🤸 Ragdoll</button>
+            <button class="mode-btn" data-mode="pinball" title="Pachinko chaos - beats fire flippers, bass shakes pegs">🎰 Pinball</button>
+            <button class="mode-btn" data-mode="chains" title="Pendulums and chains swing with BPM - bass breaks links">⛓️ Chains</button>
           </div>
 
           <div class="mode-panel" data-panel="games">
@@ -75,6 +84,7 @@
             <button class="mode-btn" data-mode="timedisplacement" title="Past, present, future rendered out of order">⏳ Time Warp</button>
             <button class="mode-btn" data-mode="antiviz" title="Sound destroys, silence preserves">🕳️ Anti-Viz</button>
             <button class="mode-btn" data-mode="synesthesialies" title="Audio becomes smell, taste, texture">👃 Synesthesia</button>
+            <button class="mode-btn" data-mode="quantumgravity" title="Sound IS gravity. Bass warps spacetime. Beats collapse wave functions.">🌌 Quantum Gravity</button>
           </div>
 
           <div class="mode-panel" data-panel="code">
@@ -143,6 +153,15 @@
         <input type="checkbox" id="speech-toggle" />
         <span class="toggle-label">Lyrics</span>
       </label>
+
+      <div class="separator"></div>
+
+      <label class="toggle" title="Enter fullscreen mode (F)">
+        <input type="checkbox" id="fullscreen-toggle" />
+        <span class="toggle-label">Fullscreen</span>
+      </label>
+
+      <button id="hide-ui-btn" title="Hide all controls (H)">Hide UI</button>
 
       <div class="separator"></div>
 
