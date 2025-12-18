@@ -2,7 +2,7 @@ import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
 import { Renderer3D } from './visual/renderer3d.js'
-import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode } from './visual/modes3d/index.js'
+import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode } from './visual/modes3d/index.js'
 import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
 import { ASCIIRenderer } from './visual/ascii.js'
@@ -56,7 +56,8 @@ class AudioCanvas {
       geometry3d: GeometryMode,
       nebula3d: NebulaMode,
       tunnel3d: TunnelMode,
-      protein3d: ProteinMode
+      protein3d: ProteinMode,
+      demolition3d: DemolitionMode
     }
   }
 

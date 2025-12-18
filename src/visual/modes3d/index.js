@@ -3,9 +3,10 @@ import { GeometryMode } from './geometry.js'
 import { NebulaMode } from './nebula.js'
 import { TunnelMode } from './tunnel.js'
 import { ProteinMode } from './protein.js'
+import { DemolitionMode } from './demolition.js'
 
 // Re-export classes
-export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode }
+export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode }
 
 export const MODES_3D = {
   geometry3d: {
@@ -31,6 +32,12 @@ export const MODES_3D = {
     name: '3D Protein',
     description: 'Amino acid chains folding with audio',
     icon: '🧬'
+  },
+  demolition3d: {
+    class: DemolitionMode,
+    name: 'Audio Demolition',
+    description: 'Physics structures destroyed by audio. Bass shakes. Beats explode.',
+    icon: '💥'
   }
 }
 
