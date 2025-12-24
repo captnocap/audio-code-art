@@ -52,6 +52,9 @@
             <button class="mode-btn" data-mode="polymer" title="Chain reactions building polymer structures">🔗 Polymer</button>
             <button class="mode-btn" data-mode="electrochemistry" title="Electrochemical cells with electron flow">⚡ Electro</button>
             <button class="mode-btn" data-mode="mandelbrot" title="Audio-reactive fractal exploration with Julia morphing">🌀 Fractal</button>
+            <button class="mode-btn" data-mode="beach" title="Sound as ocean waves - sand remembers, shells deposit, tide pools form">🏖️ Beach</button>
+            <button class="mode-btn" data-mode="audiogrid" title="GitHub-style grid where each cell is a musical note - chords create lightning">📊 Commit Grid</button>
+            <button class="mode-btn" data-mode="edgegravity" title="Edges pull particles to the void - sound pushes them back with light trails">🌑 Edge Gravity</button>
           </div>
 
           <div class="mode-panel" data-panel="3d">
@@ -62,6 +65,11 @@
             <button class="mode-btn" data-mode="demolition3d" title="Physics structures destroyed by audio - bass shakes, beats explode">💥 Demolition</button>
             <button class="mode-btn" data-mode="softbody3d" title="Jelly blobs colliding and squishing to audio">🫧 Soft Body</button>
             <button class="mode-btn" data-mode="dimensional3d" title="2D plane in 3D space - portals tear between dimensions">🌀 Dimensional</button>
+            <button class="mode-btn" data-mode="gravity3d" title="Bass creates black holes, Treble creates anti-gravity">🪐 Audio Gravity</button>
+            <button class="mode-btn" data-mode="beach3d" title="3D ocean waves - sand remembers, shells deposit, tide pools form">🏖️ 3D Beach</button>
+            <button class="mode-btn" data-mode="topography3d" title="3D terrain built from audio - frequency × amplitude × time">🗻 Topography</button>
+            <button class="mode-btn" data-mode="wormhole3d" title="Fly through audio - terrain wrapped into a tunnel">🏄 Surfer</button>
+            <button class="mode-btn" data-mode="hallucination3d" title="Neural cellular automata - living walls that breathe, grow, heal, and dream">🧠 Neural Dreams</button>
           </div>
 
           <div class="mode-panel" data-panel="physics">
@@ -90,6 +98,7 @@
           <div class="mode-panel" data-panel="code">
             <button class="mode-btn" data-mode="jsxgen" title="Generate React components from audio">⚛️ JSX Generator</button>
             <button class="mode-btn" data-mode="aichat" title="Chat where responses become visual chaos">🧠 AI Chat</button>
+            <button class="mode-btn" data-mode="uikit" title="Generate CSS/Tailwind themes from audio - albums become design systems">🎨 UI Kit</button>
           </div>
         </div>
       </div>
@@ -152,6 +161,11 @@
       <label class="toggle" title="Interpret vocals as text data for visualization">
         <input type="checkbox" id="speech-toggle" />
         <span class="toggle-label">Lyrics</span>
+      </label>
+
+      <label class="toggle" title="Painter Mode - canvas accumulates like oil paint">
+        <input type="checkbox" id="painter-toggle" />
+        <span class="toggle-label">Painter</span>
       </label>
 
       <div class="separator"></div>
@@ -357,6 +371,26 @@
               <strong>AI Chat</strong>
               <p>Chat interface where responses become multi-mode visual chaos. Words trigger different layers.</p>
             </div>
+            <div class="mode-item">
+              <span class="mode-icon">🎨</span>
+              <strong>UI Kit</strong>
+              <p>Albums become design systems. CSS variables, colors, spacing extracted from audio.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🏖️</span>
+              <strong>Beach</strong>
+              <p>Sound as ocean waves. Sand remembers, shells deposit, tide pools form.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">📊</span>
+              <strong>Commit Grid</strong>
+              <p>GitHub-style grid where each cell is a musical note. Chords create lightning.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🌑</span>
+              <strong>Edge Gravity</strong>
+              <p>Edges pull particles to the void. Sound pushes them back with light trails.</p>
+            </div>
           </div>
           <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #ff5555;">Glitch Modes (Chaos!)</h3>
           <div class="mode-grid">
@@ -389,6 +423,11 @@
               <span class="mode-icon">👃</span>
               <strong>Synesthesia</strong>
               <p>Pitch → smell. Volume → taste. Rhythm → texture. Impossible sensations as words.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🌌</span>
+              <strong>Quantum Gravity</strong>
+              <p>Sound IS gravity. Bass warps spacetime. Beats collapse wave functions. The unified theory of audio.</p>
             </div>
           </div>
           <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #ff4488;">Interactive Modes (Games!)</h3>
@@ -435,6 +474,46 @@
               <span class="mode-icon">🧬</span>
               <strong>Protein</strong>
               <p>Amino acid chains that fold and unfold. Alpha helices and beta sheets form with audio.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">💥</span>
+              <strong>Demolition</strong>
+              <p>Physics structures destroyed by audio. Bass shakes foundations. Beats explode walls.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🫧</span>
+              <strong>Soft Body</strong>
+              <p>Jelly blobs colliding and squishing. Bass compresses. Beats bounce.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🌀</span>
+              <strong>Dimensional</strong>
+              <p>2D plane in 3D space. Portals tear open between dimensions. Physics breaks.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🪐</span>
+              <strong>Audio Gravity</strong>
+              <p>Bass creates black holes. Treble creates anti-gravity zones. Objects orbit and collide.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🏖️</span>
+              <strong>3D Beach</strong>
+              <p>3D ocean waves with sand, shells, and tide pools. Sound shapes the shore.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🗻</span>
+              <strong>Topography</strong>
+              <p>3D terrain built from audio. Frequency × amplitude × time creates geological records.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🏄</span>
+              <strong>Surfer</strong>
+              <p>Fly through a wormhole! Arrow keys to surf. Particles paint the walls. Bass drops freeze time.</p>
+            </div>
+            <div class="mode-item">
+              <span class="mode-icon">🧠</span>
+              <strong>Neural Dreams</strong>
+              <p>Neural cellular automata. Living walls that breathe, grow, heal, and hallucinate.</p>
             </div>
           </div>
         </section>

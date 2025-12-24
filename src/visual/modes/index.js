@@ -55,6 +55,18 @@ export { AudiosurfMode } from './audiosurf.js'
 // Experimental physics modes
 export { QuantumGravityMode } from './quantumgravity.js'
 
+// Nature modes
+export { BeachMode } from './beach.js'
+
+// Data visualization modes
+export { AudioGridMode } from './audiogrid.js'
+
+// Particle modes
+export { EdgeGravityMode } from './edgegravity.js'
+
+// Design system modes
+export { UIKitMode } from './uikit.js'
+
 // Registry of all available modes
 export const MODES = {
   flowParticles: {
@@ -324,6 +336,38 @@ export const MODES = {
     name: 'Quantum Gravity',
     description: 'Sound IS gravity. Bass warps spacetime. Beats collapse wave functions. The unified theory of audio.',
     icon: '🌌'
+  },
+
+  // Nature
+  beach: {
+    class: () => import('./beach.js').then(m => m.BeachMode),
+    name: 'Beach Tides',
+    description: 'Sound as ocean waves. Sand remembers. Shells deposit. Tide pools form.',
+    icon: '🏖️'
+  },
+
+  // Data visualization
+  audiogrid: {
+    class: () => import('./audiogrid.js').then(m => m.AudioGridMode),
+    name: 'Audio Commit Grid',
+    description: 'GitHub-style grid where each cell is a musical note. Chords create lightning.',
+    icon: '📊'
+  },
+
+  // Particle modes
+  edgegravity: {
+    class: () => import('./edgegravity.js').then(m => m.EdgeGravityMode),
+    name: 'Edge Gravity',
+    description: 'Edges pull particles to the void. Sound pushes them back. Light trails in darkness.',
+    icon: '🌑'
+  },
+
+  // Design system modes
+  uikit: {
+    class: () => import('./uikit.js').then(m => m.UIKitMode),
+    name: 'UI Kit Generator',
+    description: 'Albums become design systems. CSS variables, colors, spacing from audio.',
+    icon: '🎨'
   }
 }
 

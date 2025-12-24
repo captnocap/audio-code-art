@@ -32,7 +32,9 @@ export class MirrorMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high } = weighted
     const { onBeat, beatIntensity, normalizedTempo, isSaturated } = beatInfo
 
     // Update flow field

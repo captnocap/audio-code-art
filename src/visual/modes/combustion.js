@@ -197,7 +197,9 @@ export class CombustionMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio

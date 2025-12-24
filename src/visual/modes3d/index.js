@@ -6,9 +6,14 @@ import { ProteinMode } from './protein.js'
 import { DemolitionMode } from './demolition.js'
 import { SoftBodyMode } from './softbody.js'
 import { DimensionalMode } from './dimensional.js'
+import { GravityMode } from './gravity.js'
+import { Beach3DMode } from './beach3d.js'
+import { TopographyMode } from './topography.js'
+import { WormholeMode } from './wormhole.js'
+import { HallucinationMode } from './hallucination.js'
 
 // Re-export classes
-export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode }
+export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode, GravityMode, Beach3DMode, TopographyMode, WormholeMode, HallucinationMode }
 
 export const MODES_3D = {
   geometry3d: {
@@ -52,6 +57,36 @@ export const MODES_3D = {
     name: 'Dimensional Bleed',
     description: '2D bleeds into 3D. Portals tear open. Physics breaks.',
     icon: '🌀'
+  },
+  gravity3d: {
+    class: GravityMode,
+    name: 'Audio Gravity',
+    description: 'Bass creates black holes, Treble creates anti-gravity.',
+    icon: '🪐'
+  },
+  beach3d: {
+    class: Beach3DMode,
+    name: '3D Beach Tides',
+    description: 'Sound as ocean waves in 3D. Sand remembers. Shells deposit.',
+    icon: '🏖️'
+  },
+  topography3d: {
+    class: TopographyMode,
+    name: 'Sonic Topography',
+    description: 'Audio terrain - frequency x amplitude x time. A geological record of sound.',
+    icon: '🗻'
+  },
+  wormhole3d: {
+    class: WormholeMode,
+    name: 'Audio Surfer',
+    description: 'Ride the sound! Arrow keys to surf. Particles paint the walls. Bass drops freeze time.',
+    icon: '🏄'
+  },
+  hallucination3d: {
+    class: HallucinationMode,
+    name: 'Neural Dreams',
+    description: 'Living geometry. Neural cellular automata. The walls breathe, grow, heal, and hallucinate.',
+    icon: '🧠'
   }
 }
 

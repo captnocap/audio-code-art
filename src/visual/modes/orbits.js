@@ -169,7 +169,9 @@ export class OrbitsMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio values
@@ -229,12 +231,13 @@ export class OrbitsMode extends VisualizationMode {
       }
     }
 
-    // High frequency adds jitter to all particles
-    if (this.smoothHigh > 0.3) {
-      const jitter = (this.smoothHigh - 0.3) * 2
-      for (const p of this.particles) {
-        p.vx += (Math.random() - 0.5) * jitter
-        p.vy += (Math.random() - 0.5) * jitter
+    // High frequency adds jitter to all particles (chaos amplifies)
+    const jitterThreshold = 0.5 - p.sensitivity * 0.3
+    if (this.smoothHigh > jitterThreshold) {
+      const jitter = (this.smoothHigh - jitterThreshold) * (1 + p.chaos * 3)
+      for (const particle of this.particles) {
+        particle.vx += (Math.random() - 0.5) * jitter
+        particle.vy += (Math.random() - 0.5) * jitter
       }
     }
   }

@@ -45,8 +45,13 @@ export class PixelSortMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, bass, high, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, bass, high, centroid } = weighted
     const { onBeat, normalizedTempo, beatIntensity } = beatInfo
+
+    // Dynamic threshold based on sensitivity (higher sensitivity = lower threshold)
+    this.sortThreshold = 0.6 - p.sensitivity * 0.4
 
     // Update color bands based on frequency spectrum
     const frequencies = audioFeatures.frequencies
@@ -93,14 +98,14 @@ export class PixelSortMode extends VisualizationMode {
       this.ctx.fillRect(offset, band.y, this.width, band.height)
     }
 
-    // Apply pixel sorting when intensity is high
+    // Apply pixel sorting when intensity is high (chaos amplifies effect)
+    const p = this.tunerParams
     if (this.sortIntensity > 0.1) {
-      this.applyPixelSort(this.sortIntensity)
+      this.applyPixelSort(this.sortIntensity * (0.5 + p.chaos * 0.5))
     }
 
-    // Subtle fade
-    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.01)'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    // Subtle fade (tuner decay controls)
+    this.clearBackground(0.01)
   }
 
   applyPixelSort(intensity) {

@@ -60,7 +60,9 @@ export class PipesMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high } = weighted
     const { onBeat, beatIntensity, normalizedTempo } = beatInfo
 
     // Growth speed based on amplitude

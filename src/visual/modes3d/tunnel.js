@@ -106,7 +106,9 @@ export class TunnelMode extends Visualization3DMode {
   }
 
   update(audioFeatures, beatInfo, delta, elapsed) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { onBeat, beatIntensity, normalizedTempo } = beatInfo
 
     // Smooth audio values

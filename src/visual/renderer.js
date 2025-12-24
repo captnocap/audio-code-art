@@ -40,6 +40,10 @@ import { TetrisMode } from './modes/tetris.js'
 import { MinesweeperMode } from './modes/minesweeper.js'
 import { AudiosurfMode } from './modes/audiosurf.js'
 import { QuantumGravityMode } from './modes/quantumgravity.js'
+import { BeachMode } from './modes/beach.js'
+import { AudioGridMode } from './modes/audiogrid.js'
+import { EdgeGravityMode } from './modes/edgegravity.js'
+import { UIKitMode } from './modes/uikit.js'
 import { RagdollMode } from './modesPhysics/ragdoll.js'
 import { PinballMode } from './modesPhysics/pinball.js'
 import { ChainMode } from './modesPhysics/chains.js'
@@ -87,6 +91,10 @@ const MODE_CLASSES = {
   minesweeper: MinesweeperMode,
   audiosurf: AudiosurfMode,
   quantumgravity: QuantumGravityMode,
+  beach: BeachMode,
+  audiogrid: AudioGridMode,
+  edgegravity: EdgeGravityMode,
+  uikit: UIKitMode,
   ragdoll: RagdollMode,
   pinball: PinballMode,
   chains: ChainMode
@@ -115,6 +123,9 @@ export class Renderer {
     // Background transparency (for YouTube overlay)
     this.transparentBackground = false
 
+    // Painter mode - accumulate visuals without clearing
+    this.painterMode = false
+
     // Pan/zoom reference (set externally)
     this.panZoom = null
 
@@ -130,6 +141,14 @@ export class Renderer {
     this.transparentBackground = transparent
     if (this.currentMode) {
       this.currentMode.transparentBackground = transparent
+    }
+  }
+
+  setPainterMode(enabled) {
+    this.painterMode = enabled
+    // When turning off, clear the canvas to show fresh state
+    if (!enabled) {
+      this.clear()
     }
   }
 
@@ -165,6 +184,7 @@ export class Renderer {
     const ModeClass = MODE_CLASSES[modeName]
     this.currentMode = new ModeClass(this.ctx, this.width, this.height)
     this.currentMode.transparentBackground = this.transparentBackground
+    this.currentMode.renderer = this  // Give mode access to renderer for painter mode
     this.currentMode.init()
     this.clear()
   }
@@ -229,11 +249,15 @@ export class Renderer {
       // Clear in screen space first (before transform)
       // This prevents duplicate frames when zoomed
       this.ctx.setTransform(1, 0, 0, 1, 0, 0)
-      if (this.transparentBackground) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-      } else {
-        this.ctx.fillStyle = '#0a0a0a'
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+
+      // Only clear if NOT in painter mode
+      if (!this.painterMode) {
+        if (this.transparentBackground) {
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        } else {
+          this.ctx.fillStyle = '#0a0a0a'
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        }
       }
 
       // Apply pan/zoom transform before drawing content

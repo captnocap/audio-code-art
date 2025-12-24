@@ -33,11 +33,13 @@ export class MandalaMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high } = weighted
     const { onBeat, beatIntensity, normalizedTempo } = beatInfo
 
-    // Slowly rotate the whole mandala
-    this.rotationOffset += 0.001 * (1 + normalizedTempo)
+    // Slowly rotate the whole mandala (chaos adds variation)
+    this.rotationOffset += 0.001 * (1 + normalizedTempo) * (0.5 + p.chaos)
 
     // On each beat, add a new slice
     if (onBeat && this.currentRadius < this.maxRadius) {
@@ -87,9 +89,8 @@ export class MandalaMode extends VisualizationMode {
   }
 
   draw() {
-    // Very subtle fade for accumulation
-    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.005)'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    // Use clearBackground for tuner-controlled decay
+    this.clearBackground(0.005)
 
     // Draw all slices
     for (const slice of this.slices) {

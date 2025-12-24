@@ -61,7 +61,9 @@ export class JSXGenMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high, waveform } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high, waveform } = weighted
     const { onBeat, beatIntensity, normalizedTempo, bpm } = beatInfo
 
     this.frameCount++

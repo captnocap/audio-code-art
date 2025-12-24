@@ -143,7 +143,9 @@ export class CrystalMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio

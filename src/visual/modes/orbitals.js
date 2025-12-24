@@ -168,7 +168,9 @@ export class OrbitalsMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid, dominantFrequency } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid, dominantFrequency } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio

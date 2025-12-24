@@ -173,7 +173,9 @@ export class StainedGlassMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid, frequencies } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid, frequencies } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio values

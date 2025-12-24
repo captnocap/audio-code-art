@@ -67,7 +67,9 @@ export class TerrainMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high, frequencies } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high, frequencies } = weighted
     const { normalizedTempo, beatIntensity, onBeat } = beatInfo
 
     // More granular frequency bands for 24 layers
@@ -94,13 +96,14 @@ export class TerrainMode extends VisualizationMode {
       // Scroll with layer-specific speed
       layer.scrollOffset += this.scrollSpeed * (0.3 + layer.depth * 0.7) * layer.speedVariance
 
-      // Add new height value with some per-layer variation
-      const heightVariance = 1 + Math.sin(Date.now() * 0.001 + i) * 0.2
+      // Add new height value with some per-layer variation (chaos adds more variation)
+      const heightVariance = 1 + Math.sin(Date.now() * 0.001 + i) * (0.1 + p.chaos * 0.3)
       const newHeight = bandValue * this.height * layer.amplitude * heightVariance
       layer.heights.push(newHeight)
 
-      // Get distinct color for this layer
-      layer.colors.push(this.getDistinctColor(centroid, i, normalizedTempo, bandValue))
+      // Get distinct color for this layer (colorDrift shifts hue over time)
+      const driftedCentroid = centroid + (Date.now() * 0.00001 * p.colorDrift)
+      layer.colors.push(this.getDistinctColor(driftedCentroid, i, normalizedTempo, bandValue))
 
       // Remove old values
       if (layer.heights.length > this.historyLength) {

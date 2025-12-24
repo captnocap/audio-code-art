@@ -26,7 +26,9 @@ export class ConstellationMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high } = weighted
     const { onBeat, beatIntensity, normalizedTempo, isSaturated } = beatInfo
 
     // Spawn stars on beat
@@ -48,9 +50,10 @@ export class ConstellationMode extends VisualizationMode {
       }
     }
 
-    // Continuous spawning based on amplitude
-    if (amplitude > 0.3 && Math.random() < amplitude * 0.2) {
-      this.spawnStar(audioFeatures, beatInfo)
+    // Continuous spawning based on amplitude (sensitivity controls threshold)
+    const threshold = 0.5 - p.sensitivity * 0.4
+    if (amplitude > threshold && Math.random() < amplitude * (0.1 + p.sensitivity * 0.2)) {
+      this.spawnStar(weighted, beatInfo)
     }
 
     // Update star twinkle
@@ -136,9 +139,8 @@ export class ConstellationMode extends VisualizationMode {
   }
 
   draw() {
-    // Very subtle fade for accumulation
-    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.01)'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    // Very subtle fade for accumulation (tuner decay controls)
+    this.clearBackground(0.01)
 
     // Draw connections
     for (const conn of this.connections) {

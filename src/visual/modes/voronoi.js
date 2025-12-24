@@ -142,7 +142,9 @@ export class VoronoiMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio values
@@ -152,9 +154,9 @@ export class VoronoiMode extends VisualizationMode {
     this.smoothHigh += (high - this.smoothHigh) * smoothing
     this.smoothAmplitude += (amplitude - this.smoothAmplitude) * smoothing
 
-    // Shatter on beat
-    if (onBeat && beatIntensity > 0.3) {
-      const force = beatIntensity * 30
+    // Shatter on beat (chaos increases force, sensitivity lowers threshold)
+    if (onBeat && beatIntensity > (0.5 - p.sensitivity * 0.4)) {
+      const force = beatIntensity * (15 + p.chaos * 30)
       const centerX = this.width / 2
       const centerY = this.height / 2
 
@@ -163,11 +165,12 @@ export class VoronoiMode extends VisualizationMode {
       }
     }
 
-    // Continuous disturbance during saturation
+    // Continuous disturbance during saturation (chaos amplifies)
     if (isSaturated) {
+      const disturbance = 2 + p.chaos * 6
       for (const site of this.sites) {
-        site.vx += (Math.random() - 0.5) * 5
-        site.vy += (Math.random() - 0.5) * 5
+        site.vx += (Math.random() - 0.5) * disturbance
+        site.vy += (Math.random() - 0.5) * disturbance
       }
     }
 

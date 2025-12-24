@@ -117,7 +117,9 @@ export class AutomataMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio values
@@ -135,8 +137,8 @@ export class AutomataMode extends VisualizationMode {
     this.surviveMin = Math.floor(1 + this.smoothMid * 1.5)
     this.surviveMax = Math.floor(3 + this.smoothMid * 1)
 
-    // High frequency adds chaos/mutation
-    const mutationRate = this.smoothHigh * 0.002
+    // High frequency adds chaos/mutation (chaos param amplifies)
+    const mutationRate = this.smoothHigh * (0.001 + p.chaos * 0.004)
 
     // Update speed based on tempo
     this.updateInterval = Math.max(1, Math.floor(4 - normalizedTempo * 3))

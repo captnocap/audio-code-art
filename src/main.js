@@ -2,7 +2,7 @@ import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
 import { Renderer3D } from './visual/renderer3d.js'
-import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode } from './visual/modes3d/index.js'
+import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode, GravityMode, Beach3DMode, TopographyMode, WormholeMode, HallucinationMode } from './visual/modes3d/index.js'
 import { MODES_PHYSICS, RagdollMode, PinballMode, ChainMode } from './visual/modesPhysics/index.js'
 import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
@@ -60,7 +60,12 @@ class AudioCanvas {
       protein3d: ProteinMode,
       demolition3d: DemolitionMode,
       softbody3d: SoftBodyMode,
-      dimensional3d: DimensionalMode
+      dimensional3d: DimensionalMode,
+      gravity3d: GravityMode,
+      beach3d: Beach3DMode,
+      topography3d: TopographyMode,
+      wormhole3d: WormholeMode,
+      hallucination3d: HallucinationMode
     }
 
     // 2D Physics mode classes
@@ -223,6 +228,11 @@ class AudioCanvas {
       this.toggleSpeech(e.target.checked)
     })
 
+    // Painter mode toggle
+    document.getElementById('painter-toggle')?.addEventListener('change', (e) => {
+      this.renderer.setPainterMode(e.target.checked)
+    })
+
     // Fullscreen toggle
     document.getElementById('fullscreen-toggle')?.addEventListener('change', (e) => {
       this.toggleFullscreen(e.target.checked)
@@ -260,6 +270,13 @@ class AudioCanvas {
         this.toggleFullscreen(toggle.checked)
       } else if (e.key === 'h' || e.key === 'H') {
         this.toggleUIVisibility()
+      }
+
+      // Forward key events to current mode if it handles them
+      if (this.is3DMode && this.renderer3d?.currentMode?.handleKeyPress) {
+        this.renderer3d.currentMode.handleKeyPress(e.key)
+      } else if (this.renderer?.currentMode?.handleKeyPress) {
+        this.renderer.currentMode.handleKeyPress(e.key)
       }
     })
 

@@ -29,7 +29,9 @@ export class RingsMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { amplitude, centroid, bass, mid, high } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { amplitude, centroid, bass, mid, high } = weighted
     const { onBeat, beatIntensity, normalizedTempo, isSaturated } = beatInfo
 
     // Spawn ring on beat - bigger, more prominent
@@ -45,10 +47,10 @@ export class RingsMode extends VisualizationMode {
       })
     }
 
-    // Continuous rapid-fire rings based on amplitude - MUCH more frequent
-    // Spawn multiple rings per frame when loud
-    const spawnRate = amplitude * 0.8  // Up to 80% chance per frame when loud
-    const ringCount = isSaturated ? 3 : (amplitude > 0.5 ? 2 : 1)
+    // Continuous rapid-fire rings based on amplitude - tuner controls rate
+    // Sensitivity increases spawn rate, chaos adds variation
+    const spawnRate = amplitude * (0.4 + p.sensitivity * 0.6)
+    const ringCount = isSaturated ? 3 : (amplitude > (0.7 - p.sensitivity * 0.4) ? 2 : 1)
 
     for (let i = 0; i < ringCount; i++) {
       if (Math.random() < spawnRate) {
@@ -92,9 +94,8 @@ export class RingsMode extends VisualizationMode {
   }
 
   draw() {
-    // Fade background
-    this.ctx.fillStyle = 'rgba(10, 10, 10, 0.03)'
-    this.ctx.fillRect(0, 0, this.width, this.height)
+    // Fade background (tuner decay controls trail length)
+    this.clearBackground(0.03)
 
     // Draw rings
     for (const ring of this.rings) {

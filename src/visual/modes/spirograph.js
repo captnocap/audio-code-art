@@ -52,7 +52,9 @@ export class SpirographMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { normalizedTempo, onBeat, beatIntensity } = beatInfo
 
     // Smooth audio values for fluid motion
@@ -69,12 +71,13 @@ export class SpirographMode extends VisualizationMode {
     // High affects pen distance (detail level)
     this.d = this.baseD * (0.3 + this.smoothHigh * 1.4)
 
-    // Rotation speed based on tempo
-    this.rotationSpeed = 0.015 + normalizedTempo * 0.03
+    // Rotation speed based on tempo (chaos adds variation)
+    this.rotationSpeed = (0.015 + normalizedTempo * 0.03) * (0.7 + p.chaos * 0.6)
 
-    // On beat, add a small phase jump for visual accent
-    if (onBeat && beatIntensity > 0.5) {
-      this.angle += beatIntensity * 0.3
+    // On beat, add a small phase jump for visual accent (sensitivity lowers threshold)
+    const beatThreshold = 0.7 - p.sensitivity * 0.4
+    if (onBeat && beatIntensity > beatThreshold) {
+      this.angle += beatIntensity * (0.2 + p.chaos * 0.3)
     }
 
     // Calculate spirograph position using hypotrochoid equations

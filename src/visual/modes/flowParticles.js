@@ -23,8 +23,9 @@ export class FlowParticlesMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    this.flowField.update(audioFeatures)
-    this.particleSystem.update(this.flowField, audioFeatures, beatInfo)
+    const weighted = this.getWeightedAudio(audioFeatures)
+    this.flowField.update(weighted)
+    this.particleSystem.update(this.flowField, weighted, beatInfo)
   }
 
   draw() {

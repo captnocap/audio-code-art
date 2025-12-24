@@ -116,7 +116,9 @@ export class MyceliumMode extends VisualizationMode {
   }
 
   update(audioFeatures, beatInfo) {
-    const { bass, mid, high, amplitude, centroid } = audioFeatures
+    const p = this.tunerParams
+    const weighted = this.getWeightedAudio(audioFeatures)
+    const { bass, mid, high, amplitude, centroid } = weighted
     const { normalizedTempo, onBeat, beatIntensity, isSaturated } = beatInfo
 
     // Smooth audio values
@@ -127,14 +129,15 @@ export class MyceliumMode extends VisualizationMode {
 
     this.noiseTime += 0.01 + normalizedTempo * 0.02
 
-    // Growth speed based on bass
-    const growthSpeed = 0.5 + this.smoothBass * 2
+    // Growth speed based on bass (chaos adds variation)
+    const growthSpeed = (0.5 + this.smoothBass * 2) * (0.7 + p.chaos * 0.6)
 
-    // Branching probability based on mid
-    const branchProb = 0.01 + this.smoothMid * 0.03
+    // Branching probability based on mid (chaos increases branching)
+    const branchProb = (0.01 + this.smoothMid * 0.03) * (0.5 + p.chaos)
 
-    // Spawn new seeds on beat
-    if (onBeat && beatIntensity > 0.4) {
+    // Spawn new seeds on beat (sensitivity lowers threshold)
+    const beatThreshold = 0.6 - p.sensitivity * 0.4
+    if (onBeat && beatIntensity > beatThreshold) {
       const numSeeds = Math.ceil(beatIntensity * 3)
       this.seedGrowthPoints(numSeeds, audioFeatures, beatInfo)
     }
