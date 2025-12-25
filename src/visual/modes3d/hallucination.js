@@ -32,6 +32,7 @@ export class HallucinationMode extends Visualization3DMode {
     this.feedbackStrength = 0.15
     this.dreamIntensity = 0
     this.chaosLevel = 0
+    this.beatPulse = 0  // Fast-decaying beat spike for explosions
 
     // The tunnel geometry
     this.tunnelSegments = 48
@@ -43,7 +44,7 @@ export class HallucinationMode extends Visualization3DMode {
 
     // Living tendrils that grow from walls
     this.tendrils = []
-    this.maxTendrils = 50
+    this.maxTendrils = 500
 
     // Particle system - neurons firing
     this.neurons = []
@@ -60,7 +61,7 @@ export class HallucinationMode extends Visualization3DMode {
 
     // Time and animation
     this.time = 0
-    this.scrollSpeed = 0
+    this.scrollSpeed = 1
     this.tunnelRotation = 0
 
     // Stimulation points - where audio "touches" the NCA
@@ -139,16 +140,18 @@ export class HallucinationMode extends Visualization3DMode {
         uAudioHigh: { value: 0 },
         uAudioAmplitude: { value: 0 },
         // Multiple stimulation points for whole-surface activity
-        uStimPoints: { value: [
-          new THREE.Vector2(0.5, 0.5),
-          new THREE.Vector2(0.2, 0.3),
-          new THREE.Vector2(0.8, 0.7),
-          new THREE.Vector2(0.3, 0.8),
-          new THREE.Vector2(0.7, 0.2),
-          new THREE.Vector2(0.1, 0.5),
-          new THREE.Vector2(0.9, 0.5),
-          new THREE.Vector2(0.5, 0.1)
-        ]},
+        uStimPoints: {
+          value: [
+            new THREE.Vector2(0.5, 0.5),
+            new THREE.Vector2(0.2, 0.3),
+            new THREE.Vector2(0.8, 0.7),
+            new THREE.Vector2(0.3, 0.8),
+            new THREE.Vector2(0.7, 0.2),
+            new THREE.Vector2(0.1, 0.5),
+            new THREE.Vector2(0.9, 0.5),
+            new THREE.Vector2(0.5, 0.1)
+          ]
+        },
         uChaos: { value: 0 },
         uTextureMode: { value: 0 }  // 0=organic, 1=geometric, 2=flowing
       },
@@ -403,7 +406,7 @@ export class HallucinationMode extends Visualization3DMode {
 
         // Perlin-ish noise
         const noise = Math.sin(u * 50) * Math.sin(v * 50) * 0.2 +
-                     Math.sin(u * 100 + v * 70) * 0.1
+          Math.sin(u * 100 + v * 70) * 0.1
 
         // R: Chemical A for reaction-diffusion (mostly 1, with some holes)
         data[i + 0] = Math.min(1, 0.8 + noise + wave1)
@@ -520,7 +523,9 @@ export class HallucinationMode extends Visualization3DMode {
         uScrollOffset: { value: 0 },
         uAudioBass: { value: 0 },
         uAudioMid: { value: 0 },
-        uAudioHigh: { value: 0 }
+        uAudioHigh: { value: 0 },
+        uAudioAmplitude: { value: 0 },  // Was missing - used in fragment shader!
+        uBeat: { value: 0 }  // Fast-decaying beat pulse for explosions
       },
       vertexShader: `
         attribute vec3 color;
@@ -567,90 +572,200 @@ export class HallucinationMode extends Visualization3DMode {
         uniform float uAudioBass;
         uniform float uAudioMid;
         uniform float uAudioHigh;
+        uniform float uAudioAmplitude;  // Was missing!
+        uniform float uBeat;  // Fast-decaying beat pulse
 
         varying vec2 vUv;
         varying vec3 vColor;
         varying vec3 vNormal;
         varying vec3 vPosition;
 
+        // Hash for procedural effects
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+
+        // HSV to RGB conversion for rainbow colors
+        vec3 hsv2rgb(vec3 c) {
+          vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+          vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+          return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+        }
+
         void main() {
-          // Sample NCA at multiple offsets for flowing effect
-          vec2 ncaUV = vec2(vUv.x, fract(vUv.y + uScrollOffset));
+          // === DEPTH CALCULATION (0 = close, 1 = far) ===
+          float depthRatio = clamp(-vPosition.z / 150.0, 0.0, 1.0);
+          float closeness = 1.0 - depthRatio;  // 1 = close, 0 = far
+
+          // === SAMPLE NCA ===
+          float ncaOffsetX = sin(depthRatio * 6.28 + uTime * 0.5) * 0.3;
+          float ncaOffsetY = cos(depthRatio * 4.0 + uTime * 0.3) * 0.2;
+          vec2 ncaUV = vec2(
+            fract(vUv.x + ncaOffsetX + uTime * 0.1),
+            fract(vUv.y + uScrollOffset + ncaOffsetY)
+          );
           vec4 nca = texture2D(uNCA, ncaUV);
 
-          // Secondary sample with slight offset for depth
-          vec2 ncaUV2 = vec2(vUv.x + 0.01, fract(vUv.y + uScrollOffset + 0.02));
-          vec4 nca2 = texture2D(uNCA, ncaUV2);
+          // Base color - deep space
+          vec3 col = vec3(0.01, 0.0, 0.03);
 
-          // Base color from NCA state - MUCH MORE VIBRANT
-          vec3 col = vec3(0.02, 0.0, 0.05);  // Dark base, not black
+          // ============================================
+          // === WARP DRIVE STREAKS - FULL SPECTRUM ===
+          // ============================================
 
-          // R channel = organic blobs (magenta/pink)
-          vec3 blobColor = mix(vec3(0.9, 0.1, 0.4), vec3(1.0, 0.4, 0.7), nca.r);
-          col += blobColor * nca.r * 1.5;
+          // Multiple layers of warp streaks at different angles and speeds
+          float warpIntensity = 0.0;
+          float warpHue = 0.0;
 
-          // G channel = flowing energy (cyan to green)
-          vec3 flowColor = mix(vec3(0.0, 0.6, 0.9), vec3(0.2, 1.0, 0.5), nca.g);
-          col += flowColor * nca.g * 2.0;
+          // Create 12 layers of warp streaks for dense coverage
+          for (int i = 0; i < 12; i++) {
+            float fi = float(i);
 
-          // B channel = sparkling activity (white/gold)
-          vec3 sparkColor = mix(vec3(1.0, 0.8, 0.3), vec3(1.0, 1.0, 1.0), nca.b);
-          col += sparkColor * nca.b * 2.5;
+            // Each layer has different angle offset
+            float angleOffset = fi * 0.523599;  // ~30 degrees apart
+            float speed = 8.0 + fi * 2.0 + uAudioBass * 10.0;
 
-          // A channel = life force underlayer (deep purple)
-          col += vec3(0.4, 0.0, 0.6) * nca.a * 0.8;
+            // Streak pattern - lines flowing toward camera
+            float streakAngle = vUv.x * 6.28318 + angleOffset;
+            float streak = sin(streakAngle * (8.0 + fi * 2.0));
 
-          // === FLOWING VEINS that pulse with audio ===
-          float veinFreq = 30.0 + uAudioBass * 20.0;
-          float vein1 = sin(vUv.x * veinFreq + uTime * 3.0) * sin(vUv.y * 20.0 - uTime * 2.0);
-          float vein2 = cos(vUv.x * 25.0 - uTime * 2.5) * sin(vUv.y * veinFreq + uTime * 1.5);
-          float veins = smoothstep(0.7, 1.0, max(vein1, vein2));
-          col += vec3(1.0, 0.2, 0.6) * veins * (0.5 + uAudioMid);
+            // Flowing toward viewer (negative time = toward camera)
+            float flow = vUv.y * 100.0 - uTime * speed;
+            float flowPattern = sin(flow + streak * 3.0);
 
-          // === TRAVELING WAVES (ripple across surface) ===
-          float wave = sin(vUv.y * 50.0 - uTime * 5.0 + sin(vUv.x * 10.0) * 2.0);
-          wave = smoothstep(0.8, 1.0, wave);
-          col += vec3(0.3, 0.8, 1.0) * wave * uAudioHigh * 0.8;
+            // Sharp streak lines
+            float streakLine = smoothstep(0.7, 0.95, flowPattern);
 
-          // === DEPTH-BASED VARIATION (not just fade) ===
-          float depthRatio = -vPosition.z / 150.0;
+            // Intensity increases toward camera (closeness)
+            float layerIntensity = streakLine * (0.3 + closeness * 0.7);
 
-          // Close = more saturated, far = more ethereal
-          float saturation = 1.0 - depthRatio * 0.3;
-          col = mix(vec3(dot(col, vec3(0.299, 0.587, 0.114))), col, saturation);
+            // Audio modulation
+            if (i < 4) layerIntensity *= (0.5 + uAudioBass);
+            else if (i < 8) layerIntensity *= (0.5 + uAudioMid);
+            else layerIntensity *= (0.5 + uAudioHigh);
 
-          // Add fog glow at distance instead of just darkening
-          vec3 fogColor = vec3(0.1, 0.0, 0.2) + vec3(0.2, 0.0, 0.3) * uDreamIntensity;
-          col = mix(col, fogColor, depthRatio * 0.5);
+            warpIntensity += layerIntensity;
 
-          // Keep close areas bright!
-          float closeBoost = smoothstep(0.3, 0.0, depthRatio);
-          col *= 1.0 + closeBoost * 0.5;
+            // Accumulate hue based on layer contribution
+            float layerHue = fi / 12.0 + uTime * 0.1 + vUv.x * 0.5;
+            warpHue += layerHue * layerIntensity;
+          }
 
-          // === EDGE GLOW (rim lighting) ===
+          // Normalize hue
+          if (warpIntensity > 0.0) {
+            warpHue = warpHue / warpIntensity;
+          }
+
+          // Convert to rainbow color
+          vec3 warpColor = hsv2rgb(vec3(fract(warpHue), 1.0, 1.0));
+
+          // Add warp streaks to color - STRONG contribution
+          col += warpColor * warpIntensity * 1.5;
+
+          // === HYPER LINES - thin bright streaks ===
+          for (int j = 0; j < 8; j++) {
+            float fj = float(j);
+            float lineAngle = vUv.x * 6.28318 + fj * 0.785398;  // 45 degrees apart
+
+            // Super thin, super fast lines
+            float hyperSpeed = 15.0 + fj * 3.0 + uAudioAmplitude * 20.0;
+            float hyperFlow = vUv.y * 200.0 - uTime * hyperSpeed;
+            float hyperPattern = sin(hyperFlow + sin(lineAngle * 12.0) * 2.0);
+
+            // Very sharp thin lines
+            float hyperLine = smoothstep(0.92, 1.0, hyperPattern);
+
+            // Brightest close to camera
+            hyperLine *= closeness * closeness;
+
+            // Rainbow hue cycling
+            float hyperHue = fj / 8.0 + uTime * 0.3 + vUv.y * 2.0;
+            vec3 hyperColor = hsv2rgb(vec3(fract(hyperHue), 0.9, 1.0));
+
+            col += hyperColor * hyperLine * 2.0;
+          }
+
+          // === SPIRAL WARP TRAILS ===
+          float spiralAngle = atan(vUv.x - 0.5, closeness + 0.1);
+          float spiralDist = length(vec2(vUv.x - 0.5, closeness));
+
+          for (int k = 0; k < 6; k++) {
+            float fk = float(k);
+            float spiralSpeed = 4.0 + fk * 1.5 + uAudioMid * 5.0;
+            float spiral = sin(spiralAngle * (3.0 + fk) + spiralDist * 20.0 - uTime * spiralSpeed);
+            spiral = smoothstep(0.75, 1.0, spiral);
+
+            // Spiral rainbow
+            float spiralHue = fk / 6.0 + spiralAngle / 6.28318 + uTime * 0.2;
+            vec3 spiralColor = hsv2rgb(vec3(fract(spiralHue), 1.0, 1.0));
+
+            col += spiralColor * spiral * closeness * 0.8;
+          }
+
+          // === NCA ORGANIC UNDERTONES (subtle, add depth) ===
+          float ncaBoost = 0.5 + closeness * 0.5;
+          col += vec3(0.9, 0.1, 0.4) * nca.r * 0.4 * ncaBoost;
+          col += vec3(0.0, 0.6, 0.9) * nca.g * 0.5 * ncaBoost;
+          col += vec3(1.0, 0.8, 0.3) * nca.b * 0.6 * ncaBoost;
+
+          // === STARBURST FLASHES on beats ===
+          float starburst = 0.0;
+          for (int s = 0; s < 8; s++) {
+            float fs = float(s);
+            float burstAngle = fs * 0.785398 + uTime * 2.0;
+            float burstDir = cos(vUv.x * 6.28318 - burstAngle) * sin(vUv.y * 50.0 - uTime * 10.0);
+            starburst += smoothstep(0.9, 1.0, burstDir) * uAudioBass;
+          }
+          float starHue = uTime * 0.5 + vUv.x;
+          col += hsv2rgb(vec3(fract(starHue), 0.8, 1.0)) * starburst * closeness;
+
+          // === CHROMATIC EDGE GLOW ===
           float edge = 1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)));
-          vec3 edgeColor = mix(vec3(0.5, 0.0, 1.0), vec3(0.0, 1.0, 0.8), uAudioHigh);
-          col += edgeColor * pow(edge, 2.0) * (0.3 + uDreamIntensity * 0.5);
+          float edgeHue = vUv.x + uTime * 0.2 + uAudioHigh;
+          vec3 edgeColor = hsv2rgb(vec3(fract(edgeHue), 1.0, 1.0));
+          col += edgeColor * pow(edge, 2.0) * 0.6;
 
-          // === BEAT FLASH ===
-          col += vec3(0.1, 0.05, 0.15) * uAudioBass * (1.0 - depthRatio);
+          // === WARP CORE GLOW (center brightens) ===
+          float centerDist = abs(vUv.x - 0.5) * 2.0;
+          float coreGlow = 1.0 - smoothstep(0.0, 0.3, centerDist);
+          float coreHue = uTime * 0.3 + closeness;
+          col += hsv2rgb(vec3(fract(coreHue), 0.7, 1.0)) * coreGlow * closeness * 0.5 * (1.0 + uAudioAmplitude);
 
-          // === CHROMATIC SHIMMER ===
-          float shimmer = sin(vUv.x * 100.0 + vUv.y * 100.0 + uTime * 10.0) * 0.5 + 0.5;
-          col.r += shimmer * nca.b * 0.1;
-          col.b += (1.0 - shimmer) * nca.b * 0.1;
+          // === DEPTH FOG (subtle, far only) ===
+          vec3 fogColor = vec3(0.05, 0.0, 0.1);
+          col = mix(col, fogColor, depthRatio * depthRatio * 0.4);
 
-          // Ensure we don't blow out
-          col = clamp(col, 0.0, 1.5);
+          // === SPARKLE LAYER ===
+          float sparkle = hash(vUv * 150.0 + floor(uTime * 30.0));
+          sparkle = step(0.96, sparkle);
+          float sparkHue = hash(vUv * 50.0 + uTime);
+          col += hsv2rgb(vec3(sparkHue, 1.0, 1.0)) * sparkle * (0.8 + closeness);
 
-          // Tone mapping for HDR feel
-          col = col / (1.0 + col);
+          // === AUDIO BASS PULSE (white flash on heavy bass) ===
+          col += vec3(0.3, 0.2, 0.4) * uAudioBass * closeness * uAudioBass;
+
+          // === BEAT EXPLOSION - multiply biggest contributors by beat pulse ===
+          float beatMultiplier = 1.0 + uBeat * 3.0;  // Up to 4x on hard beat
+          col *= beatMultiplier;
+
+          // === FINAL OUTPUT ===
+          // Loosen clamp for additive blending - allow more overbright
+          col = clamp(col, 0.0, 8.0);
+
+          // Gentler tone mapping to preserve energy
+          col = col / (1.0 + col * 0.25);
+
+          // Slight saturation boost
+          float gray = dot(col, vec3(0.299, 0.587, 0.114));
+          col = mix(vec3(gray), col, 1.3);
 
           gl_FragColor = vec4(col, 1.0);
         }
       `,
       side: THREE.BackSide,
-      transparent: false
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     })
 
     this.tunnel = new THREE.Mesh(this.tunnelGeometry, this.tunnelMaterial)
@@ -720,7 +835,9 @@ export class HallucinationMode extends Visualization3DMode {
 
         void main() {
           vColor = color;
-          vAlpha = color.r;
+          // FIX: Use max brightness instead of just red channel
+          // This prevents cyan/blue particles from disappearing
+          vAlpha = max(color.r, max(color.g, color.b));
 
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           gl_PointSize = size * 50.0 / -mvPosition.z;
@@ -968,6 +1085,14 @@ export class HallucinationMode extends Visualization3DMode {
     }
     this.chaosLevel *= 0.95
 
+    // Beat pulse - fast decay for explosive reactions
+    if (onBeat) {
+      this.beatPulse = Math.max(this.beatPulse, beatIntensity)
+      // Also jack dreamIntensity on beat for extra punch
+      this.dreamIntensity = Math.min(1, this.dreamIntensity + 0.6 * beatIntensity)
+    }
+    this.beatPulse *= Math.pow(0.001, delta)  // Fast decay (~good "hit" feel)
+
     // Update NCA simulation
     this.updateNCA(delta)
 
@@ -979,9 +1104,16 @@ export class HallucinationMode extends Visualization3DMode {
     this.tunnelMaterial.uniforms.uAudioBass.value = this.smoothBass
     this.tunnelMaterial.uniforms.uAudioMid.value = this.smoothMid
     this.tunnelMaterial.uniforms.uAudioHigh.value = this.smoothHigh
+    this.tunnelMaterial.uniforms.uAudioAmplitude.value = this.smoothAmplitude  // Was never fed!
+    this.tunnelMaterial.uniforms.uBeat.value = this.beatPulse  // Explosive beat pulse
 
-    // Tunnel rotation
+    // Tunnel rotation - actually apply it to the mesh!
     this.tunnelRotation += delta * (0.2 + this.smoothHigh * 0.5)
+    this.tunnel.rotation.z = this.tunnelRotation
+    this.wireframe.rotation.z = this.tunnelRotation
+    // Add subtle organic wobble
+    this.tunnel.rotation.x = Math.sin(elapsed * 0.3) * 0.1 * this.smoothMid
+    this.tunnel.rotation.y = Math.cos(elapsed * 0.25) * 0.1 * this.smoothMid
 
     // Update systems
     this.updateNeurons(delta)
@@ -1064,7 +1196,13 @@ export class HallucinationMode extends Visualization3DMode {
     this.smoothAmplitude = 0
     this.dreamIntensity = 0
     this.chaosLevel = 0
+    this.beatPulse = 0
     this.tunnelRotation = 0
     this.tunnelMaterial.uniforms.uScrollOffset.value = 0
+    // Reset tunnel rotation
+    if (this.tunnel) {
+      this.tunnel.rotation.set(0, 0, 0)
+      this.wireframe.rotation.set(0, 0, 0)
+    }
   }
 }

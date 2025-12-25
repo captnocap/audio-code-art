@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Audio Canvas</title>
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
   <div id="app">
     <div id="video-container"></div>
@@ -24,7 +26,8 @@
 
         <div id="mode-panels">
           <div class="mode-panel active" data-panel="2d">
-            <button class="mode-btn active" data-mode="flowParticles" title="Particles following flow fields">〰️ Flow</button>
+            <button class="mode-btn active" data-mode="flowParticles" title="Particles following flow fields">〰️
+              Flow</button>
             <button class="mode-btn" data-mode="pixelSort" title="Glitchy pixel sorting">▦ Sort</button>
             <button class="mode-btn" data-mode="mandala" title="Radial beat slices">◎ Mandala</button>
             <button class="mode-btn" data-mode="lsystem" title="Fractal tree growth">🌿 Tree</button>
@@ -32,73 +35,125 @@
             <button class="mode-btn" data-mode="constellation" title="Star map">✦ Stars</button>
             <button class="mode-btn" data-mode="terrain" title="Mountain landscape">⛰ Terrain</button>
             <button class="mode-btn" data-mode="mirror" title="Kaleidoscope symmetry">✧ Mirror</button>
-            <button class="mode-btn" data-mode="plotter" title="Single continuous line for pen plotters">✎ Plotter</button>
+            <button class="mode-btn" data-mode="plotter" title="Single continuous line for pen plotters">✎
+              Plotter</button>
             <button class="mode-btn" data-mode="spirograph" title="Audio-modulated mathematical curves">❋ Spiro</button>
-            <button class="mode-btn" data-mode="automata" title="Game of Life with audio-modulated rules">▣ Life</button>
-            <button class="mode-btn" data-mode="orbits" title="Particles orbiting gravitational attractors">◉ Orbits</button>
-            <button class="mode-btn" data-mode="voronoi" title="Cellular patterns that fracture on beats">⬡ Voronoi</button>
+            <button class="mode-btn" data-mode="automata" title="Game of Life with audio-modulated rules">▣
+              Life</button>
+            <button class="mode-btn" data-mode="orbits" title="Particles orbiting gravitational attractors">◉
+              Orbits</button>
+            <button class="mode-btn" data-mode="voronoi" title="Cellular patterns that fracture on beats">⬡
+              Voronoi</button>
             <button class="mode-btn" data-mode="mycelium" title="Organic branching network growth">🍄 Mycelium</button>
-            <button class="mode-btn" data-mode="contours" title="Audio height field with contour lines">≋ Contours</button>
-            <button class="mode-btn" data-mode="stainedglass" title="Delaunay mosaic with rippling colors">◇ Glass</button>
-            <button class="mode-btn" data-mode="isometric" title="Procedural cityscapes that breathe with audio">🏙 City</button>
-            <button class="mode-btn" data-mode="cymatics" title="Chladni plate standing wave patterns">〇 Cymatics</button>
-            <button class="mode-btn" data-mode="reactiondiffusion" title="Organic Gray-Scott chemical patterns">🧫 R-D</button>
+            <button class="mode-btn" data-mode="contours" title="Audio height field with contour lines">≋
+              Contours</button>
+            <button class="mode-btn" data-mode="stainedglass" title="Delaunay mosaic with rippling colors">◇
+              Glass</button>
+            <button class="mode-btn" data-mode="isometric" title="Procedural cityscapes that breathe with audio">🏙
+              City</button>
+            <button class="mode-btn" data-mode="cymatics" title="Chladni plate standing wave patterns">〇
+              Cymatics</button>
+            <button class="mode-btn" data-mode="reactiondiffusion" title="Organic Gray-Scott chemical patterns">🧫
+              R-D</button>
             <button class="mode-btn" data-mode="pipes" title="Classic Windows 3D pipes screensaver">🔧 Pipes</button>
-            <button class="mode-btn" data-mode="molecular" title="Atoms forming and breaking chemical bonds">⚛ Molecular</button>
-            <button class="mode-btn" data-mode="crystal" title="Dendritic crystal nucleation and growth">❄ Crystal</button>
-            <button class="mode-btn" data-mode="orbitals" title="Quantum probability clouds (s, p, d, f)">☢ Orbitals</button>
-            <button class="mode-btn" data-mode="combustion" title="Realistic fire with chemical reactions">🔥 Fire</button>
+            <button class="mode-btn" data-mode="molecular" title="Atoms forming and breaking chemical bonds">⚛
+              Molecular</button>
+            <button class="mode-btn" data-mode="crystal" title="Dendritic crystal nucleation and growth">❄
+              Crystal</button>
+            <button class="mode-btn" data-mode="orbitals" title="Quantum probability clouds (s, p, d, f)">☢
+              Orbitals</button>
+            <button class="mode-btn" data-mode="combustion" title="Realistic fire with chemical reactions">🔥
+              Fire</button>
             <button class="mode-btn" data-mode="titration" title="Color-changing pH indicator solution">🧪 pH</button>
-            <button class="mode-btn" data-mode="polymer" title="Chain reactions building polymer structures">🔗 Polymer</button>
-            <button class="mode-btn" data-mode="electrochemistry" title="Electrochemical cells with electron flow">⚡ Electro</button>
-            <button class="mode-btn" data-mode="mandelbrot" title="Audio-reactive fractal exploration with Julia morphing">🌀 Fractal</button>
-            <button class="mode-btn" data-mode="beach" title="Sound as ocean waves - sand remembers, shells deposit, tide pools form">🏖️ Beach</button>
-            <button class="mode-btn" data-mode="audiogrid" title="GitHub-style grid where each cell is a musical note - chords create lightning">📊 Commit Grid</button>
-            <button class="mode-btn" data-mode="edgegravity" title="Edges pull particles to the void - sound pushes them back with light trails">🌑 Edge Gravity</button>
+            <button class="mode-btn" data-mode="polymer" title="Chain reactions building polymer structures">🔗
+              Polymer</button>
+            <button class="mode-btn" data-mode="electrochemistry" title="Electrochemical cells with electron flow">⚡
+              Electro</button>
+            <button class="mode-btn" data-mode="mandelbrot"
+              title="Audio-reactive fractal exploration with Julia morphing">🌀 Fractal</button>
+            <button class="mode-btn" data-mode="beach"
+              title="Sound as ocean waves - sand remembers, shells deposit, tide pools form">🏖️ Beach</button>
+            <button class="mode-btn" data-mode="audiogrid"
+              title="GitHub-style grid where each cell is a musical note - chords create lightning">📊 Commit
+              Grid</button>
+            <button class="mode-btn" data-mode="edgegravity"
+              title="Edges pull particles to the void - sound pushes them back with light trails">🌑 Edge
+              Gravity</button>
           </div>
 
           <div class="mode-panel" data-panel="3d">
-            <button class="mode-btn" data-mode="geometry3d" title="Pulsing 3D icosahedron with audio-reactive morphing">💎 Geometry</button>
-            <button class="mode-btn" data-mode="nebula3d" title="Cosmic particle cloud that breathes with audio">🌌 Nebula</button>
-            <button class="mode-btn" data-mode="tunnel3d" title="Infinite tunnel flying through audio-reactive space">🕳️ Tunnel</button>
-            <button class="mode-btn" data-mode="protein3d" title="Amino acid chains folding and unfolding with audio">🧬 Protein</button>
-            <button class="mode-btn" data-mode="demolition3d" title="Physics structures destroyed by audio - bass shakes, beats explode">💥 Demolition</button>
-            <button class="mode-btn" data-mode="softbody3d" title="Jelly blobs colliding and squishing to audio">🫧 Soft Body</button>
-            <button class="mode-btn" data-mode="dimensional3d" title="2D plane in 3D space - portals tear between dimensions">🌀 Dimensional</button>
-            <button class="mode-btn" data-mode="gravity3d" title="Bass creates black holes, Treble creates anti-gravity">🪐 Audio Gravity</button>
-            <button class="mode-btn" data-mode="beach3d" title="3D ocean waves - sand remembers, shells deposit, tide pools form">🏖️ 3D Beach</button>
-            <button class="mode-btn" data-mode="topography3d" title="3D terrain built from audio - frequency × amplitude × time">🗻 Topography</button>
-            <button class="mode-btn" data-mode="wormhole3d" title="Fly through audio - terrain wrapped into a tunnel">🏄 Surfer</button>
-            <button class="mode-btn" data-mode="hallucination3d" title="Neural cellular automata - living walls that breathe, grow, heal, and dream">🧠 Neural Dreams</button>
+            <button class="mode-btn" data-mode="geometry3d"
+              title="Pulsing 3D icosahedron with audio-reactive morphing">💎 Geometry</button>
+            <button class="mode-btn" data-mode="nebula3d" title="Cosmic particle cloud that breathes with audio">🌌
+              Nebula</button>
+            <button class="mode-btn" data-mode="tunnel3d"
+              title="Infinite tunnel flying through audio-reactive space">🕳️ Tunnel</button>
+            <button class="mode-btn" data-mode="protein3d" title="Amino acid chains folding and unfolding with audio">🧬
+              Protein</button>
+            <button class="mode-btn" data-mode="demolition3d"
+              title="Physics structures destroyed by audio - bass shakes, beats explode">💥 Demolition</button>
+            <button class="mode-btn" data-mode="softbody3d" title="Jelly blobs colliding and squishing to audio">🫧 Soft
+              Body</button>
+            <button class="mode-btn" data-mode="dimensional3d"
+              title="2D plane in 3D space - portals tear between dimensions">🌀 Dimensional</button>
+            <button class="mode-btn" data-mode="gravity3d"
+              title="Bass creates black holes, Treble creates anti-gravity">🪐 Audio Gravity</button>
+            <button class="mode-btn" data-mode="beach3d"
+              title="3D ocean waves - sand remembers, shells deposit, tide pools form">🏖️ 3D Beach</button>
+            <button class="mode-btn" data-mode="topography3d"
+              title="3D terrain built from audio - frequency × amplitude × time">🗻 Topography</button>
+            <button class="mode-btn" data-mode="wormhole3d" title="Fly through audio - terrain wrapped into a tunnel">🏄
+              Surfer</button>
+            <button class="mode-btn" data-mode="hallucination3d"
+              title="Neural cellular automata - living walls that breathe, grow, heal, and dream">🧠 Neural
+              Dreams</button>
+            <button class="mode-btn" data-mode="psychedelic3d"
+              title="A journey into the bizarre - non-Euclidean geometry and melting colors">🍄 Psychedelic</button>
           </div>
 
           <div class="mode-panel" data-panel="physics">
-            <button class="mode-btn" data-mode="ragdoll" title="Ragdoll mosh pit - bass makes them heavy, beats make them jump">🤸 Ragdoll</button>
-            <button class="mode-btn" data-mode="pinball" title="Pachinko chaos - beats fire flippers, bass shakes pegs">🎰 Pinball</button>
-            <button class="mode-btn" data-mode="chains" title="Pendulums and chains swing with BPM - bass breaks links">⛓️ Chains</button>
+            <button class="mode-btn" data-mode="ragdoll"
+              title="Ragdoll mosh pit - bass makes them heavy, beats make them jump">🤸 Ragdoll</button>
+            <button class="mode-btn" data-mode="pinball"
+              title="Pachinko chaos - beats fire flippers, bass shakes pegs">🎰 Pinball</button>
+            <button class="mode-btn" data-mode="chains"
+              title="Pendulums and chains swing with BPM - bass breaks links">⛓️ Chains</button>
           </div>
 
           <div class="mode-panel" data-panel="games">
-            <button class="mode-btn" data-mode="bullethell" title="Navigate audio-generated bullet patterns - you cannot die">👾 Bullet Hell</button>
-            <button class="mode-btn" data-mode="tetris" title="Tetris where pieces are chosen by audio">🧱 Tetris</button>
-            <button class="mode-btn" data-mode="minesweeper" title="Beats spawn mines - clear between the chaos">💣 Minesweeper</button>
-            <button class="mode-btn" data-mode="audiosurf" title="Ride a highway generated from audio">🏄 Audiosurf</button>
+            <button class="mode-btn" data-mode="bullethell"
+              title="Navigate audio-generated bullet patterns - you cannot die">👾 Bullet Hell</button>
+            <button class="mode-btn" data-mode="tetris" title="Tetris where pieces are chosen by audio">🧱
+              Tetris</button>
+            <button class="mode-btn" data-mode="minesweeper" title="Beats spawn mines - clear between the chaos">💣
+              Minesweeper</button>
+            <button class="mode-btn" data-mode="audiosurf" title="Ride a highway generated from audio">🏄
+              Audiosurf</button>
           </div>
 
           <div class="mode-panel" data-panel="glitch">
-            <button class="mode-btn" data-mode="corruption" title="Memory artifacts - past audio bleeds into present">💾 Corruption</button>
-            <button class="mode-btn" data-mode="feedback" title="Canvas becomes audio input - recursive chaos">♾️ Feedback</button>
-            <button class="mode-btn" data-mode="wrongapi" title="Audio controls impossible things - errors as art">⚠️ Wrong API</button>
-            <button class="mode-btn" data-mode="timedisplacement" title="Past, present, future rendered out of order">⏳ Time Warp</button>
+            <button class="mode-btn" data-mode="corruption" title="Memory artifacts - past audio bleeds into present">💾
+              Corruption</button>
+            <button class="mode-btn" data-mode="feedback" title="Canvas becomes audio input - recursive chaos">♾️
+              Feedback</button>
+            <button class="mode-btn" data-mode="wrongapi" title="Audio controls impossible things - errors as art">⚠️
+              Wrong API</button>
+            <button class="mode-btn" data-mode="timedisplacement" title="Past, present, future rendered out of order">⏳
+              Time Warp</button>
             <button class="mode-btn" data-mode="antiviz" title="Sound destroys, silence preserves">🕳️ Anti-Viz</button>
-            <button class="mode-btn" data-mode="synesthesialies" title="Audio becomes smell, taste, texture">👃 Synesthesia</button>
-            <button class="mode-btn" data-mode="quantumgravity" title="Sound IS gravity. Bass warps spacetime. Beats collapse wave functions.">🌌 Quantum Gravity</button>
+            <button class="mode-btn" data-mode="synesthesialies" title="Audio becomes smell, taste, texture">👃
+              Synesthesia</button>
+            <button class="mode-btn" data-mode="quantumgravity"
+              title="Sound IS gravity. Bass warps spacetime. Beats collapse wave functions.">🌌 Quantum Gravity</button>
           </div>
 
           <div class="mode-panel" data-panel="code">
-            <button class="mode-btn" data-mode="jsxgen" title="Generate React components from audio">⚛️ JSX Generator</button>
-            <button class="mode-btn" data-mode="aichat" title="Chat where responses become visual chaos">🧠 AI Chat</button>
-            <button class="mode-btn" data-mode="uikit" title="Generate CSS/Tailwind themes from audio - albums become design systems">🎨 UI Kit</button>
+            <button class="mode-btn" data-mode="jsxgen" title="Generate React components from audio">⚛️ JSX
+              Generator</button>
+            <button class="mode-btn" data-mode="aichat" title="Chat where responses become visual chaos">🧠 AI
+              Chat</button>
+            <button class="mode-btn" data-mode="uikit"
+              title="Generate CSS/Tailwind themes from audio - albums become design systems">🎨 UI Kit</button>
           </div>
         </div>
       </div>
@@ -204,7 +259,8 @@
 
         <section>
           <h2>How It Works</h2>
-          <p>Audio is analyzed in real-time using the Web Audio API. Frequency data, amplitude, and beat detection feed into generative algorithms that create visuals unique to each song.</p>
+          <p>Audio is analyzed in real-time using the Web Audio API. Frequency data, amplitude, and beat detection feed
+            into generative algorithms that create visuals unique to each song.</p>
         </section>
 
         <section>
@@ -534,12 +590,14 @@
             <li><strong>Tunnel</strong> - High intensity accelerates everything</li>
             <li><strong>Contour</strong> - Quiet moments turn bullets into safe zones</li>
           </ul>
-          <p>Getting hit doesn't end the game - it might distort time, shift colors, invert your controls, or clear bullets. The goal isn't survival - it's grace, timing, and reading the field.</p>
+          <p>Getting hit doesn't end the game - it might distort time, shift colors, invert your controls, or clear
+            bullets. The goal isn't survival - it's grace, timing, and reading the field.</p>
         </section>
 
         <section>
           <h2>Tuner Panel</h2>
-          <p>Click the 🎛️ button (top right) to open the live tuner. Adjust visualization parameters in real-time like an audio producer mixing visuals:</p>
+          <p>Click the 🎛️ button (top right) to open the live tuner. Adjust visualization parameters in real-time like
+            an audio producer mixing visuals:</p>
           <ul>
             <li><strong>Decay</strong> - Trail persistence (low = instant, high = forever)</li>
             <li><strong>Sensitivity</strong> - Audio reactivity threshold</li>
@@ -555,7 +613,8 @@
 
         <section>
           <h2>Blast Mode</h2>
-          <p>When enabled, detects high beat rates (&gt;8 beats/sec) like blast beats in metal. Instead of pulsing on every beat (which would be overwhelming), switches to sustained intensity for smooth flowing visuals.</p>
+          <p>When enabled, detects high beat rates (&gt;8 beats/sec) like blast beats in metal. Instead of pulsing on
+            every beat (which would be overwhelming), switches to sustained intensity for smooth flowing visuals.</p>
         </section>
 
         <section>
@@ -594,7 +653,8 @@
 
         <section>
           <h2>ASCII Mode</h2>
-          <p>Switches from canvas to text-based visualization. The entire screen becomes a grid of characters that respond to audio:</p>
+          <p>Switches from canvas to text-based visualization. The entire screen becomes a grid of characters that
+            respond to audio:</p>
           <ul>
             <li>Character density represents amplitude</li>
             <li>Wave patterns flow based on bass/mid/high frequencies</li>
@@ -604,14 +664,16 @@
 
         <section>
           <h2>Lyrics Mode</h2>
-          <p>Uses speech recognition to interpret vocals - even when it can't understand them. The neural network's confused attempts at transcribing screams/growls become visual data:</p>
+          <p>Uses speech recognition to interpret vocals - even when it can't understand them. The neural network's
+            confused attempts at transcribing screams/growls become visual data:</p>
           <ul>
             <li>Misheard "words" rain down through the ASCII display</li>
             <li>Character codes determine colors</li>
             <li>Confidence scores affect opacity</li>
             <li>Works best with ASCII mode enabled</li>
           </ul>
-          <p>The interpretation doesn't need to be correct - garbage text from black metal vocals creates abstract character patterns.</p>
+          <p>The interpretation doesn't need to be correct - garbage text from black metal vocals creates abstract
+            character patterns.</p>
         </section>
 
         <section>
@@ -634,4 +696,5 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>

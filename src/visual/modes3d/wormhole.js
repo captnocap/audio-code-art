@@ -40,6 +40,14 @@ export class WormholeMode extends Visualization3DMode {
     this.recentMax = 0.3
     this.recentMin = 0
 
+    // === SCRAMBLED FREQUENCY MAPPING ===
+    // Logical frequency bins map to random visual positions around the cylinder
+    // This breaks up the repeating patterns!
+    this.frequencyMapping = null  // logicalBin -> visualSegment
+    this.reverseMapping = null    // visualSegment -> logicalBin
+    this.mappingMorphSpeed = 0.1  // How fast positions drift
+    this.mappingMorphTargets = null  // Target positions for smooth morphing
+
     // Particle system
     this.particles = []
     this.particleGeometry = null
@@ -81,6 +89,10 @@ export class WormholeMode extends Visualization3DMode {
         this.paintLayer[r].push({ r: 0, g: 0, b: 0, intensity: 0 })
       }
     }
+
+    // === INITIALIZE SCRAMBLED FREQUENCY MAPPING ===
+    // Create a shuffled mapping from logical frequency bins to visual positions
+    this.initFrequencyMapping()
 
     // Build custom tube geometry for full control
     // Each ring has 'segments' vertices around the circumference
@@ -215,6 +227,95 @@ export class WormholeMode extends Visualization3DMode {
 
     window.addEventListener('keydown', this.handleKeyDown)
     window.addEventListener('keyup', this.handleKeyUp)
+  }
+
+  initFrequencyMapping() {
+    // Create arrays for mapping logical frequency bins to visual positions
+    // This scrambles where frequencies appear around the cylinder
+
+    this.frequencyMapping = new Array(this.segments)
+    this.reverseMapping = new Array(this.segments)
+    this.mappingMorphTargets = new Array(this.segments)
+    this.mappingCurrentPos = new Float32Array(this.segments)  // Smooth animated positions
+
+    // Start with ordered indices
+    const indices = []
+    for (let i = 0; i < this.segments; i++) {
+      indices.push(i)
+    }
+
+    // Fisher-Yates shuffle for truly random distribution
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]]
+    }
+
+    // Set up the mapping
+    // frequencyMapping[logicalBin] = visualPosition
+    for (let i = 0; i < this.segments; i++) {
+      this.frequencyMapping[i] = indices[i]
+      this.reverseMapping[indices[i]] = i
+      this.mappingCurrentPos[i] = indices[i]  // Start at target
+      this.mappingMorphTargets[i] = indices[i]
+    }
+
+    console.log('Frequency mapping initialized - patterns will be scrambled!')
+  }
+
+  reshuffleMapping() {
+    // Generate new random target positions for morphing
+    const newIndices = []
+    for (let i = 0; i < this.segments; i++) {
+      newIndices.push(i)
+    }
+
+    // Shuffle
+    for (let i = newIndices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newIndices[i], newIndices[j]] = [newIndices[j], newIndices[i]]
+    }
+
+    // Set as new morph targets
+    for (let i = 0; i < this.segments; i++) {
+      this.mappingMorphTargets[i] = newIndices[i]
+    }
+  }
+
+  updateFrequencyMapping(delta, beatIntensity) {
+    // Slowly morph positions toward their targets
+    const morphSpeed = this.mappingMorphSpeed * delta
+
+    for (let i = 0; i < this.segments; i++) {
+      const target = this.mappingMorphTargets[i]
+      const current = this.mappingCurrentPos[i]
+
+      // Handle wrap-around (shortest path around the circle)
+      let diff = target - current
+      if (Math.abs(diff) > this.segments / 2) {
+        if (diff > 0) diff -= this.segments
+        else diff += this.segments
+      }
+
+      // Move toward target
+      this.mappingCurrentPos[i] += diff * morphSpeed
+
+      // Wrap around
+      if (this.mappingCurrentPos[i] < 0) this.mappingCurrentPos[i] += this.segments
+      if (this.mappingCurrentPos[i] >= this.segments) this.mappingCurrentPos[i] -= this.segments
+
+      // Update integer mapping for lookups
+      this.frequencyMapping[i] = Math.round(this.mappingCurrentPos[i]) % this.segments
+    }
+
+    // Rebuild reverse mapping
+    for (let i = 0; i < this.segments; i++) {
+      this.reverseMapping[this.frequencyMapping[i]] = i
+    }
+
+    // On strong beats, trigger a reshuffle
+    if (beatIntensity > 0.8 && Math.random() < 0.1) {
+      this.reshuffleMapping()
+    }
   }
 
   initParticles(scene) {
@@ -355,6 +456,12 @@ export class WormholeMode extends Visualization3DMode {
       this.tunnelRotation += delta * (0.3 + this.smoothAmplitude * 0.5)
     }
 
+    // === UPDATE SCRAMBLED FREQUENCY MAPPING ===
+    // Positions slowly morph, with reshuffles on strong beats
+    if (this.frequencyMapping) {
+      this.updateFrequencyMapping(delta, beatIntensity)
+    }
+
     // === BLACK HOLE DROP EFFECT ===
     // Trigger on massive bass drops
     if (onBeat && beatIntensity > 0.85 && !this.isDropping && this.smoothBass > 0.7) {
@@ -472,11 +579,16 @@ export class WormholeMode extends Visualization3DMode {
     this.recentMax = Math.max(0.1, this.recentMax)  // Floor to avoid division issues
 
     // Always update the back ring with current audio
+    // === USE SCRAMBLED MAPPING to break up repeating patterns! ===
     const backRing = this.rings - 1
     if (frequencies && frequencies.length > 0) {
       const binCount = Math.min(frequencies.length, 256)
 
       for (let s = 0; s < this.segments; s++) {
+        // s = logical position (which frequency bin)
+        // visualPos = where it appears around the cylinder (scrambled!)
+        const visualPos = this.frequencyMapping ? this.frequencyMapping[s] : s
+
         const normalizedS = s / this.segments
         const binIndex = Math.floor(normalizedS * binCount)
 
@@ -490,9 +602,10 @@ export class WormholeMode extends Visualization3DMode {
           // Direct displacement - louder = bigger peaks!
           const displacement = normalizedMag * this.maxDisplacement * (0.8 + this.smoothBass * 0.4)
 
-          // Less blending for more responsiveness
-          const existing = this.heightMap[backRing][s] || 0
-          this.heightMap[backRing][s] = existing * 0.2 + displacement * 0.8
+          // Write to VISUAL position (scrambled), not logical position
+          // This distributes similar frequencies around the cylinder!
+          const existing = this.heightMap[backRing][visualPos] || 0
+          this.heightMap[backRing][visualPos] = existing * 0.2 + displacement * 0.8
         }
       }
     }
@@ -759,7 +872,11 @@ export class WormholeMode extends Visualization3DMode {
   }
 
   handleKeyPress(key) {
-    // Could add controls here
+    // R = Reshuffle the frequency mapping
+    if (key === 'r' || key === 'R') {
+      this.reshuffleMapping()
+      console.log('Frequency mapping reshuffled!')
+    }
   }
 
   resize(width, height) {
@@ -840,5 +957,8 @@ export class WormholeMode extends Visualization3DMode {
     if (this.wireMaterial) {
       this.wireMaterial.opacity = 0.2
     }
+
+    // Reinitialize the scrambled frequency mapping
+    this.initFrequencyMapping()
   }
 }

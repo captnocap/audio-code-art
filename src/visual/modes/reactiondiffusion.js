@@ -12,8 +12,8 @@ export class ReactionDiffusionMode extends VisualizationMode {
     this.description = 'Organic Gray-Scott reaction-diffusion patterns'
 
     // Simulation grid (lower resolution for performance)
-    this.scale = 3 // Each simulation cell = 3x3 pixels
-    this.gridWidth = 0
+    this.scale = 9 // Each simulation cell = 3x3 pixels
+    this.gridWidth = 2
     this.gridHeight = 0
 
     // Chemical concentrations

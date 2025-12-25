@@ -23,7 +23,7 @@ class GrowthTip {
     if (!this.alive) return
 
     // Get noise-based angle adjustment
-    const noiseAngle = noiseFunc(this.x * 0.005, this.y * 0.005, time * 0.5) * Math.PI
+    const noiseAngle = noiseFunc(this.x * 0.015, this.y * 0.005, time * 0.5) * Math.PI
 
     // Update angle with noise influence
     this.angle += noiseAngle * 0.1
@@ -36,7 +36,7 @@ class GrowthTip {
     this.path.push({ x: this.x, y: this.y })
 
     // Limit path length
-    if (this.path.length > 500) {
+    if (this.path.length > 5100) {
       this.path.shift()
     }
 
@@ -53,11 +53,11 @@ class Connection {
     this.y2 = y2
     this.color = color
     this.alpha = 0
-    this.targetAlpha = 0.6
+    this.targetAlpha = 1.6
   }
 
   update() {
-    this.alpha += (this.targetAlpha - this.alpha) * 0.1
+    this.alpha += (this.targetAlpha - this.alpha) * 0.7
   }
 }
 
@@ -69,8 +69,8 @@ export class MyceliumMode extends VisualizationMode {
 
     this.tips = []
     this.connections = []
-    this.maxTips = 200
-    this.connectionDistance = 80
+    this.maxTips = 1100
+    this.connectionDistance = 20
 
     // Smoothed audio
     this.smoothBass = 0
@@ -104,7 +104,7 @@ export class MyceliumMode extends VisualizationMode {
       const angle = Math.random() * Math.PI * 2
       const speed = 1 + Math.random() * 1.5
 
-      const color = pitchTempoToColor(centroid + (Math.random() - 0.5) * 0.2, normalizedTempo, amplitude)
+      const color = pitchTempoToColor(centroid + (Math.random() - 0.9) * 0.2, normalizedTempo, amplitude)
       const rgb = pitchTempoToRGB(centroid + (Math.random() - 0.5) * 0.2, normalizedTempo, amplitude)
 
       this.tips.push(new GrowthTip(x, y, angle, speed, color, rgb, 0))
@@ -130,10 +130,10 @@ export class MyceliumMode extends VisualizationMode {
     this.noiseTime += 0.01 + normalizedTempo * 0.02
 
     // Growth speed based on bass (chaos adds variation)
-    const growthSpeed = (0.5 + this.smoothBass * 2) * (0.7 + p.chaos * 0.6)
+    const growthSpeed = (3.5 + this.smoothBass * 2) * (0.7 + p.chaos * 0.6)
 
     // Branching probability based on mid (chaos increases branching)
-    const branchProb = (0.01 + this.smoothMid * 0.03) * (0.5 + p.chaos)
+    const branchProb = (0.3 + this.smoothMid * 0.03) * (0.5 + p.chaos)
 
     // Spawn new seeds on beat (sensitivity lowers threshold)
     const beatThreshold = 0.6 - p.sensitivity * 0.4
@@ -162,7 +162,7 @@ export class MyceliumMode extends VisualizationMode {
       // Check bounds
       const margin = 50
       if (tip.x < -margin || tip.x > this.width + margin ||
-          tip.y < -margin || tip.y > this.height + margin) {
+        tip.y < -margin || tip.y > this.height + margin) {
         tip.alive = false
         continue
       }

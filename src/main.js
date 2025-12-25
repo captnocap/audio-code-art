@@ -2,7 +2,7 @@ import { AudioAnalyzer } from './audio/analyzer.js'
 import { BeatDetector } from './audio/beatdetector.js'
 import { Renderer } from './visual/renderer.js'
 import { Renderer3D } from './visual/renderer3d.js'
-import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode, GravityMode, Beach3DMode, TopographyMode, WormholeMode, HallucinationMode } from './visual/modes3d/index.js'
+import { MODES_3D, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode, GravityMode, Beach3DMode, TopographyMode, WormholeMode, HallucinationMode, PsychedelicMode } from './visual/modes3d/index.js'
 import { MODES_PHYSICS, RagdollMode, PinballMode, ChainMode } from './visual/modesPhysics/index.js'
 import { youtubeEmbed } from './youtube/embed.js'
 import { speechInterpreter } from './audio/speech.js'
@@ -65,7 +65,8 @@ class AudioCanvas {
       beach3d: Beach3DMode,
       topography3d: TopographyMode,
       wormhole3d: WormholeMode,
-      hallucination3d: HallucinationMode
+      hallucination3d: HallucinationMode,
+      psychedelic3d: PsychedelicMode
     }
 
     // 2D Physics mode classes

@@ -11,9 +11,10 @@ import { Beach3DMode } from './beach3d.js'
 import { TopographyMode } from './topography.js'
 import { WormholeMode } from './wormhole.js'
 import { HallucinationMode } from './hallucination.js'
+import { PsychedelicMode } from './psychedelic.js'
 
 // Re-export classes
-export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode, GravityMode, Beach3DMode, TopographyMode, WormholeMode, HallucinationMode }
+export { Visualization3DMode, GeometryMode, NebulaMode, TunnelMode, ProteinMode, DemolitionMode, SoftBodyMode, DimensionalMode, GravityMode, Beach3DMode, TopographyMode, WormholeMode, HallucinationMode, PsychedelicMode }
 
 export const MODES_3D = {
   geometry3d: {
@@ -87,6 +88,12 @@ export const MODES_3D = {
     name: 'Neural Dreams',
     description: 'Living geometry. Neural cellular automata. The walls breathe, grow, heal, and hallucinate.',
     icon: '🧠'
+  },
+  psychedelic3d: {
+    class: PsychedelicMode,
+    name: 'Psychedelic',
+    description: 'A journey into the bizarre. Non-Euclidean geometry and melting colors.',
+    icon: '🍄'
   }
 }
 
